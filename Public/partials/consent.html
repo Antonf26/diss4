@@ -1,0 +1,9 @@
+<h1 ng-bind="survey.acceptanceText"></h1>
+<form ng-submit="goToSurvey()">
+<div ng-repeat="consentItem in survey.acceptanceCriteria">
+    <div>
+        <input type="checkbox" ng-model="consentItem.agreed" ng-change="toggleConsent()" id="{{$index}}"/> <label for="{{$index}}">{{consentItem.consentText}}</label>
+    </div>
+</div>
+    <div><input type="submit" value="Proceed" class="btn btn-success"/></div>
+</form>

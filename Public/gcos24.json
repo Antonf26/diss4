@@ -1,0 +1,211 @@
+{
+    "title": "GCOS-24",
+    "id": 23,
+    "defaultAnswers": [
+        {
+            "id": "0",
+            "answerText": "Strongly Disagree"
+        },
+        {
+            "id": "1",
+            "answerText": "Disagree"
+        },
+        {
+            "id": "2",
+            "answerText": "Slightly Disagree"
+        },
+        {
+            "id": "3",
+            "answerText": "Neither Disagree or Agree"
+        },
+        {
+            "id": "4",
+            "answerText": "Slightly Agree"
+        },
+        {
+            "id": "5",
+            "answerText": "Agree"
+        },
+        {
+            "id": "6",
+            "answerText": "Strongly Agree"
+        }
+    ],
+    "questions": [
+        {
+            "id": "0",
+            "questionText": "I am clear in my own mind why I am attending the clinical genetics service.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "1",
+            "questionText": "I can explain what the condition means to people in my family who may need to know.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "2",
+            "questionText": "I understand the impact of the condition on my child(ren)/any child I may have.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "3",
+            "questionText": "When I think about the condition in my family, I get upset.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "4",
+            "questionText": "I don't know where to go to get the medical help I / my family need(s).",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "5",
+            "questionText": "I can see that good things have come from having this condition in my family.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "6",
+            "questionText": "I can control how this condition affects my family.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "7",
+            "questionText": "I feel positive about the future.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "8",
+            "questionText": "I am able to cope with having this condition in my family.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "9",
+            "questionText": "I don't know what could be gained from each of the options available to me.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "10",
+            "questionText": "Having this condition in my family makes me feel anxious.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "11",
+            "questionText": "I don't know if this condition could affect my other relatives (brothers, sisters, aunts, uncles, cousins).",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "12",
+            "questionText": "In relation to the condition in my family, nothing I decide will change the future for my children / any children I might have.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "13",
+            "questionText": "I understand the reasons why my doctor referred me to the clinical genetics service.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "14",
+            "questionText": "I know how to get the non-medical help I / my family needs (e.g. educational, financial, social support).",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "15",
+            "questionText": "I can explain what the condition means to people outside my family who may need to know (e.g. teachers, social workers).",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "16",
+            "questionText": "I don't know what I can do to change how this condition affects me / my children.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "17",
+            "questionText": "I don't know who else in my family might be at risk for this condition.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "18",
+            "questionText": "I am hopeful that my children can look forward to a rewarding family life.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "19",
+            "questionText": "I am able to make plans for the future.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "20",
+            "questionText": "I feel guilty because I (might have) passed this condition on to my children.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "21",
+            "questionText": "I am powerless to do anything about this condition in my family.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "22",
+            "questionText": "I understand what concerns brought me to the clinical genetics service.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        },
+        {
+            "id": "23",
+            "questionText": "I can make decisions about the condition that may change my child(ren)'s future / the future of any child(ren) I may have.",
+            "useDefaultAnswers": true,
+            "customAnswers": null
+        }
+    ],
+    "introText": "Welcome to GCOS-24, please enter your respondent number below to proceed",
+    "authenticationFields": [
+        {
+            "fieldName": "respondentNumber",
+            "fieldLabel": "Respondent Number",
+            "isRequired": true
+        }
+    ],
+    "acceptanceText": "Please agree to the below to proceed",
+    "acceptanceCriteria": [
+        {
+            "consentText": "I confirm that I have read and understood the information sheet (version 1) for the above study. I have had the opportunity to consider the information, ask questions and have had these answered satisfactorily",
+            "agreed": false
+        },
+        {
+            "consentText": "I understand that my participation is voluntary and that I am free to withdraw at any time, without giving reason, without my medical care or legal rights being affected.",
+            "agreed": false
+        },
+        {
+            "consentText": "I agree to the study team using my anonymised questionnaire responses for the purpose of publication",
+            "agreed": false
+        },
+        {
+            "consentText": "I understand that the data collected during the study may be looked at by individuals from Cardiff University, where it is relevant to my taking part in this study",
+            "agreed": false
+        },
+        {
+            "consentText": "I agree that to take part in this study.",
+            "agreed": false
+        }
+    ]
+}

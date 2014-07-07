@@ -1,0 +1,46 @@
+.answer
+{
+    width:100%;
+    cursor:pointer;
+    padding: 2% 0 2% 0;
+}
+
+.answer:hover
+{
+    background-color: palegoldenrod;
+}
+
+
+.answerBlock {
+}
+
+.container
+{
+    background-color: #c3c5c8;
+    color:#4e5157;
+}
+
+.answer
+{
+    min-width: 50%;
+}
+
+.answer.p
+{
+
+}
+
+.surveyInstruction
+{
+    margin-bottom: 5%;
+}
+
+html,body
+{
+    background-color: #4E5157;
+    height:100%
+}
+
+
+
+

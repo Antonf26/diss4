@@ -1,0 +1,12 @@
+
+<h2>Welcome!</h2>
+<div><p ng-bind="survey.introText"></p></div>
+<form ng-submit="handleLogin()">
+<div ng-repeat="authenticationField in survey.authenticationFields">
+    <div>
+        <label for="{{authenticationField.fieldName}}">{{authenticationField.fieldLabel}}<span ng-show="authenticationField.isRequired">*</span>: </label>
+        <input type="text" ng-model="authenticationField.valueEntered" id="{{authenticationField.fieldName}}" placeholder="{{authenticationField.fieldName}}"/>
+    </div>
+    </div>
+<input type="submit" value="GO!" class="btn btn-success"/>
+</form>
