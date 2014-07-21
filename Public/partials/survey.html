@@ -1,12 +1,11 @@
-<div class="surveyInstruction">Please answer the questions below and click the button at the bottom of the survey to complete.
-    <small>* Denotes required question.</small></div>
+<div class="surveyInstruction"><h1>Please answer the questions below.</h1>
+    <p><small>* - Denotes required question.</small></p></div>
 <div ng-repeat="question in survey.questions" class="questionBlock">
-    <p class="questionText">{{$index + 1}} : {{question.questionText}}</p>
+    <p class="questionText">{{$index + 1}}. {{question.questionText}}</p>
     <div ng-repeat= "answer in getAnswers(question)" class="answerBlock">
             <label class="answer"><div>
                 <input type="radio" id="{{answer.id}}" ng-model="question.selectedAnswer" ng-value="{{answer}}">{{answer.answerText}}</input>
             </div></label>
         </div>
 </div>
-<input type="button" ng-click="complete()" value="Done" class="btn btn-success"/>
-
+<div class="row"><div class="col-sm-10"></div><div class="col-sm-2"><input type="button" ng-click="complete()" value="Done" class="btn btn-success btn-lg btn-block"/></div></div>

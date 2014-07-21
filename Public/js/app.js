@@ -2,7 +2,7 @@
  * Created by Anton on 24/06/2014.
  */
 
-var surveyApp = angular.module('surveyApp', ['ngRoute', 'surveyControllers', 'surveyAppServices', 'services2']);
+var surveyApp = angular.module('surveyApp', ['ngRoute', 'surveyControllers', 'surveyAppServices', 'services2', 'ngTouch', 'ngAnimate']);
 
 surveyApp.config(['$routeProvider',
     function($routeProvider) {

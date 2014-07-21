@@ -2,12 +2,11 @@
 {
     width:100%;
     cursor:pointer;
-    padding: 2% 0 2% 0;
 }
 
 .answer:hover
 {
-    background-color: palegoldenrod;
+    background-color: #6278A3;
 }
 
 
@@ -16,8 +15,8 @@
 
 .container
 {
-    background-color: #c3c5c8;
     color:#4e5157;
+    color: white;
 }
 
 .answer
@@ -35,12 +34,105 @@
     margin-bottom: 5%;
 }
 
-html,body
+
+body
 {
     background-color: #4E5157;
-    height:100%
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
+.loginForm
+{
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+    font-size: 1.5em;
+}
 
+.loginForm input
+{
+    margin-bottom: 10px;
 
+    height:auto;
 
+}
+
+.consentRow
+{
+    padding: 3px;
+}
+
+.consentRow input
+{
+    margin: 0 auto;
+}
+
+.consentForm
+{
+
+    margin: 0 auto;
+    font-size: 1.5em;
+}
+
+label
+{
+    font-weight: normal;
+}
+
+.consentForm button
+{
+    min-width: 250px;
+}
+
+.consentItems:nth-child(even)
+{
+    background: darkgray;
+}
+
+.consentItems
+{
+    margin-bottom: 5px;
+}
+
+.surveyInstruction
+{
+    background-color: #6E737B;
+}
+
+.questionBlock
+{
+    margin-bottom: 3px;
+}
+
+.questionText
+{
+    font-size: 1.5em;
+    background-color: #6E737B;
+    margin: 0;
+}
+
+.answerText
+{
+    font-size: 1.25em;
+}
+.answerBlock:nth-child(even)
+{
+    background-color: #383838;
+}
+
+.confirmation
+{
+    font-size: 1.5em;
+}
+
+.viewFade.ng-enter
+{
+    transition: 0.1s linear all;
+    opacity: 0;
+}
+
+.viewFade.ng-enter-active
+{
+    opacity: 1;
+}
