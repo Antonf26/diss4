@@ -8,9 +8,7 @@ surveyControllers.controller('loginController', [
     '$scope', '$location', 'SurveyResult', 'surveyService',
     function($scope, $location, SurveyResult, surveyService)
 	{
-        surveyService.getSurveyData($scope.surveyID, function(data){
-            $scope.survey = data;
-        });
+
     $scope.handleLogin = function()
     {
         toastr.clear();
@@ -26,28 +24,29 @@ surveyControllers.controller('loginController', [
         SurveyResult.setSurveyId($scope.survey._id);
 		SurveyResult.setAuthFields($scope.survey.authenticationFields);
         $location.url('/consent')
-    }
+    };
+    surveyService.getSurveyData($scope.surveyID, function(data){
+            $scope.survey = data;
+            if(!$scope.survey.authenticationFields || $scope.survey.authenticationFields.length == 0)
+            {
+                $scope.handleLogin();
+            }
+        });
 }]);
 
 
 surveyControllers.controller('consentController',
     ['$scope','SurveyResult','$location', 'surveyService',
     function($scope, SurveyResult, $location, surveyService )
-	{	
-	if (!SurveyResult.getAuthFields())
+	{
+    $scope.goToLogin = function()
     {
-       $scope.goToLogin();
-    }
-    surveyService.getSurveyData($scope.surveyID, function(data){
-        $scope.survey = data;
-    });
-    $scope.goToLogin = function(){
         $location.url('/login');
     };
     $scope.goToSurvey = function()
     {
         $scope.allCompleted = true;
-        if ($scope.survey.acceptanceCriteria)
+        if ($scope.survey.acceptanceCriteria && $scope.survey.acceptanceCriteria.length == 0)
         {
             console.log($scope.survey.acceptanceCriteria);
             $scope.survey.acceptanceCriteria.forEach(
@@ -60,7 +59,6 @@ surveyControllers.controller('consentController',
 
             });
         }
-        console.log($scope.allCompleted);
         if ($scope.allCompleted)
         {
             $location.url('/survey');
@@ -70,6 +68,17 @@ surveyControllers.controller('consentController',
             toastr.error("You must agree to all the above criteria to proceed");
         }
     };
+   surveyService.getSurveyData($scope.surveyID, function(data){
+            $scope.survey = data;
+            if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
+               {
+                   $scope.goToLogin();
+               }
+           else if(!$scope.survey.acceptanceCriteria || $scope.survey.acceptanceCriteria.length == 0)
+                {
+                    $scope.goToSurvey();
+                }
+   });
 }]);
 
 
@@ -81,13 +90,14 @@ surveyControllers.controller('questionController',
 	{
 		$location.url('/login');
 	};
-	if (!SurveyResult.getAuthFields())
-	{
-		$scope.goToLogin();
-	}
+
 
     surveyService.getSurveyData($scope.surveyID, function(data){
         $scope.survey = data;
+        if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
+        {
+             $scope.goToLogin();
+        }
     });
 		
     $scope.complete = function()
@@ -99,7 +109,8 @@ surveyControllers.controller('questionController',
 		
 	$scope.getAnswers = function(question)
 	{
-		return question.useDefaultAnswers ? $scope.survey.defaultAnswers : question.customAnswers;
+		console.log("getAnswers called");
+        return question.useDefaultAnswers ? $scope.survey.defaultAnswers : question.customAnswers;
 	}
 }]);
 
@@ -109,12 +120,12 @@ function($scope, surveyService, $location, SurveyResult)
         $scope.goToLogin = function(){
             $location.url('/login');
         };
-        if (!SurveyResult.getAuthFields())
-        {
-            $scope.goToLogin();
-        }
         surveyService.getSurveyData($scope.surveyID, function(data){
             $scope.survey = data;
+            if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
+            {
+                $scope.goToLogin();
+            }
         });
     }
 ]);

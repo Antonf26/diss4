@@ -1,0 +1,8 @@
+<p class="questionText">{{questionInd}}. {{question.questionText}}</p>
+<p class="small">Select one answer</p>
+<div ng-repeat= "answer in question.answers" class="answerBlock">
+    <label class="answer"><div>
+        <input type="radio" id="{{answer.id}}" ng-model="question.selectedAnswer" ng-value="{{answer}}">{{answer.answerText}}</input>
+        <input type="text" class="form-control right" ng-if="answer.textField" ng-model="question.selectedAnswer.textEntered" ng-disabled="question.selectedAnswer.id != answer.id"/>
+    </div></label>
+</div>

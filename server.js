@@ -13,7 +13,7 @@ var app= express();
 app.set('views', __dirname + '/views');
 
 
-app.use(bodyParser.json());
+app.use(bodyParser.json()); //allows for parsing json - used for storing result
 app.use(express.static(__dirname + '/Public'));
 app.set('view engine', 'jade');
 app.get('/surveys', surveys.findAll);
@@ -24,9 +24,7 @@ app.post('/surveys', surveys.addSurvey);
 app.post('/results', surveys.addResult);
 app.get('/results/:id', surveys.getResultsById);
 
-
-
-
+//change portNumber to change port server listens on.
 var portNumber = 3000;
 app.listen(portNumber);
 console.log('Listening on port ' + portNumber);

@@ -136,3 +136,14 @@ label
 {
     opacity: 1;
 }
+
+input[type=text] {
+    color: #4E5157;
+}
+textarea{
+    color: #4E5157;
+}
+
+.right{
+    float:right;
+}

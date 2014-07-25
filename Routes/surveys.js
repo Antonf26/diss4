@@ -9,7 +9,7 @@ var Server = mongo.Server,
 var server = new Server('localhost', 27017, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
 db = new Db('surveysdb', server);
 
-
+//Opening database connection
 db.open(function(err,db){
     if(!err){
         console.log("Connected to db");
@@ -23,8 +23,9 @@ db.open(function(err,db){
 
 });
 
+//Finds survey in DB based on ID provided in the request parameters, sends it on the response
 exports.findById = function(req, res){
-    var id = req.params.id;
+    var id = req.params.id.toUpperCase();
     console.log("get survey" + id);
     db.collection('surveys', function(err,collection){
         collection.findOne({'_id':id}, function(err, item){
@@ -33,6 +34,7 @@ exports.findById = function(req, res){
     });
 };
 
+//Returns all surveys //TODO: Remove in production (or the route to it)
 exports.findAll = function(req,res){
     db.collection('surveys', function(err, collection){
         collection.find().toArray(function(err,items){
@@ -41,6 +43,7 @@ exports.findAll = function(req,res){
     });
 };
 
+//Adds survey to DB (JSON must be provided in body)
 exports.addSurvey = function(req,res){
     var survey = req.body;
     db.collection('surveys', function(err, collection){
@@ -57,12 +60,14 @@ exports.addSurvey = function(req,res){
     })
 };
 
+
+//Deletes survey in the DB
 exports.deleteSurvey = function (req, res) {
     var id = req.params.id;
 
 };
 
-
+//Retrieves all results stored in DB
 exports.getResults = function(req,res){
     db.collection('results', function(err, collection){
         collection.find().toArray(function(err,items){
@@ -71,8 +76,9 @@ exports.getResults = function(req,res){
     });
 };
 
+//Retrieves all results stored in DB for the survey ID provided
 exports.getResultsById = function(req,res){
-	var id = req.params.id;
+    var id = req.params.id.toUpperCase();
     db.collection('results', function(err, collection){
         collection.find({'surveyID':id}).toArray(function(err,items){
             res.send(items);
@@ -80,6 +86,7 @@ exports.getResultsById = function(req,res){
     });
 };
 
+//Stores the result provided in the DB
 exports.addResult = function(req,res){
         var surveyResult = req.body;
         db.collection('results', function (err, collection) {
@@ -96,6 +103,7 @@ exports.addResult = function(req,res){
         })
 };
 
+//Used for running the surveys - checks for existence of survey
 exports.runSurvey = function(req,res){
     var id = req.params.id.toUpperCase();
     console.log("get survey" + id);
@@ -124,6 +132,7 @@ exports.runSurvey = function(req,res){
 };
 	
 
+//Populates database with placeholder //TODO: Not needed in production!
 var populateDB = function() {
 
     var surveys = [
