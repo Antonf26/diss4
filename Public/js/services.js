@@ -7,7 +7,7 @@ function($http) {
     survey.surveyData = null;
     survey.getSurveyData = function(surveyID, callback)
     {
-		if(survey.surveyData && survey.surveyData._id == surveyID)
+		if(survey.surveyData && survey.surveyData._id == surveyID)  //if we already have the data
         {
             callback(survey.surveyData);
         }
@@ -37,8 +37,8 @@ function($http) {
 var services2 = angular.module('services2', ['ngResource']);
 
 //Service handles formatting and submission of completed survey
-services2.factory('SurveyResult', ['$http',
-    function($http) 
+services2.factory('SurveyResult', ['$http', 'surveyService',
+    function($http, surveyService)
 	{
         //object that's posted (as JSON) to the back-end holding the survey's results
 		var resultSaver = function(ID, Time, Questions, AuthFields)
@@ -98,7 +98,7 @@ services2.factory('SurveyResult', ['$http',
 		result = {};
 		//required fields 
         result.consented = false;
-        result.authFields = [];
+        result.authFields = null;
         result.respondentNumber = 0;
         result.surveyID = '';
         result.questions = [];
@@ -113,7 +113,7 @@ services2.factory('SurveyResult', ['$http',
             console.log(authData);
         };
 
-        result.getAuthFields = function()
+        result.getAuthFields = function(surveyId)
         {
             if(result.authFields)
             {
@@ -121,9 +121,36 @@ services2.factory('SurveyResult', ['$http',
             }
             else
             {
-                return amplify.store(result.getSurveyId());
+                return amplify.store(surveyId);
             }
         };
+
+        result.hasAuthenticated = function(surveyID, callback)
+        {
+            //check if we need to authenticate
+            surveyService.getSurveyData(surveyID, function(data)
+        {
+            var surveyData = data;
+            if (!surveyData.authenticationFields || surveyData.authenticationFields.length == 0)
+            {
+                callback(true); //no need for authentication
+                return;
+            }
+            var authFields = result.getAuthFields(surveyID);
+            if (!authFields || authFields.length != surveyData.authenticationFields.length)
+            {
+                callback(false);
+                return;
+            }
+            else
+            {
+                callback(true);
+                return;
+            }
+        });
+        };
+
+
 
         result.setRespondentNumber = function (Number) {
             result.respondentNumber = Number;
@@ -146,11 +173,11 @@ services2.factory('SurveyResult', ['$http',
         result.getSurveyId = function()
         {
             return result.surveyID || amplify.store('surveyID');
-        }
+        };
         
-		result.save = function (){
-            var saving = new resultSaver(this.surveyID,
-            new Date(), questionCleaner(this.questions), authFieldCleaner(this.getAuthFields()));
+		result.save = function (surveyId){
+            var saving = new resultSaver(surveyId,
+            new Date(), questionCleaner(this.questions), authFieldCleaner(this.getAuthFields(surveyId)));
             return $http.post('/results', saving);
         };
 		

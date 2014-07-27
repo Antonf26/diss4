@@ -10,16 +10,25 @@ surveyDirectives.directive('ngQuestion', function(){
             question: '=',
             defanswers: '=',
             qindex: '='
+
         },
         controller: ["$scope", function($scope)
         {
             $scope.questionInd = $scope.qindex + 1;
 
+            $scope.valueChanged = function()
+            {
+                if($scope.question.isRequired)
+                {
+                    $scope.question['error'] = false;
+                }
+            };
+
             if($scope.question.textEntry)
             {
                 $scope.templateURL = "../partials/textanswertemplate.html";
             }
-            else //if this is a multiple choice question, handling answers, erc.
+            else //if this is a multiple choice question, handling answers, etc.
             {
                 $scope.question.answers = $scope.question.useDefaultAnswers ? $scope.defanswers : $scope.question.customAnswers;
                 if ($scope.question.selectMultiple) {

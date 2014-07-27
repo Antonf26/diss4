@@ -4,10 +4,35 @@
 
 var surveyControllers = angular.module('surveyControllers', []);
 
+surveyControllers.controller('redirectController', [
+    '$scope', '$location', 'SurveyResult', 'surveyService',
+    function($scope, $location, SurveyResult, surveyService)
+    {
+        var redirect = function(surveyData)
+        {
+            if (surveyData.authenticationFields && surveyData.authenticationFields.length > 0)
+            {
+                $location.url('/login');
+                return;
+            }
+            if (surveyData.acceptanceCriteria && surveyData.acceptanceCriteria.length > 0)
+            {
+                $location.url('/consent');
+                return;
+            }
+            $location.url('/survey');
+        };
+
+
+        surveyService.getSurveyData($scope.surveyID, redirect);
+    }
+]);
+
 surveyControllers.controller('loginController', [
     '$scope', '$location', 'SurveyResult', 'surveyService',
     function($scope, $location, SurveyResult, surveyService)
 	{
+
 
     $scope.handleLogin = function()
     {
@@ -22,16 +47,20 @@ surveyControllers.controller('loginController', [
         }
 
         SurveyResult.setSurveyId($scope.survey._id);
-		SurveyResult.setAuthFields($scope.survey.authenticationFields);
+        if($scope.survey.authenticationFields)
+        {
+            SurveyResult.setAuthFields($scope.survey.authenticationFields);
+        }
         $location.url('/consent')
     };
-    surveyService.getSurveyData($scope.surveyID, function(data){
-            $scope.survey = data;
-            if(!$scope.survey.authenticationFields || $scope.survey.authenticationFields.length == 0)
-            {
-                $scope.handleLogin();
-            }
-        });
+    surveyService.getSurveyData($scope.surveyID, function(data)
+    {
+        $scope.survey = data;
+        if(!$scope.survey.authenticationFields || $scope.survey.authenticationFields.length == 0) //if there are no authentication fields defined
+        {
+            $scope.handleLogin();
+        }
+    });
 }]);
 
 
@@ -43,10 +72,17 @@ surveyControllers.controller('consentController',
     {
         $location.url('/login');
     };
+    SurveyResult.hasAuthenticated($scope.surveyID, function(authenticated)
+    {
+        if (!authenticated)
+        {
+            $scope.goToLogin();
+        }
+    });
     $scope.goToSurvey = function()
     {
         $scope.allCompleted = true;
-        if ($scope.survey.acceptanceCriteria && $scope.survey.acceptanceCriteria.length == 0)
+        if ($scope.survey.acceptanceCriteria && $scope.survey.acceptanceCriteria.length > 0)
         {
             console.log($scope.survey.acceptanceCriteria);
             $scope.survey.acceptanceCriteria.forEach(
@@ -70,11 +106,8 @@ surveyControllers.controller('consentController',
     };
    surveyService.getSurveyData($scope.surveyID, function(data){
             $scope.survey = data;
-            if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
-               {
-                   $scope.goToLogin();
-               }
-           else if(!$scope.survey.acceptanceCriteria || $scope.survey.acceptanceCriteria.length == 0)
+
+           if(!$scope.survey.acceptanceCriteria || $scope.survey.acceptanceCriteria.length == 0)
                 {
                     $scope.goToSurvey();
                 }
@@ -90,26 +123,55 @@ surveyControllers.controller('questionController',
 	{
 		$location.url('/login');
 	};
-
+    SurveyResult.hasAuthenticated($scope.surveyID, function(authenticated)
+    {
+        if (!authenticated)
+        {
+            $scope.goToLogin();
+        }
+    });
 
     surveyService.getSurveyData($scope.surveyID, function(data){
         $scope.survey = data;
-        if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
-        {
-             $scope.goToLogin();
-        }
+
     });
 		
     $scope.complete = function()
 	{
+        var unansweredRequired = new Array();
+        for(i in $scope.survey.questions)
+        {
+            var question = $scope.survey.questions[i];
+
+            if(question.isRequired ) //checking for any unanswered and required questions
+            {
+                if(question.selectMultiple)
+                {
+                    if(question.answers.filter(function(a){return a.selected}).length == 0) {
+                        unansweredRequired.push($scope.survey.questions[i].id);
+                        $scope.survey.questions[i]["error"] = true;
+                    }
+                }
+                else
+                    if (!question.selectedAnswer)
+                    {
+                        unansweredRequired.push($scope.survey.questions[i].id);
+                        $scope.survey.questions[i]["error"] = true;
+                    }
+            }
+        }
+        if (unansweredRequired.length > 0)
+        {
+            toastr.error("Please answer all required questions to proceed");
+            return;
+        }
         SurveyResult.setQuestions($scope.survey.questions);
-        var savePromise = SurveyResult.save();
+        var savePromise = SurveyResult.save($scope.surveyID);
         savePromise.success($location.url('/confirmation'));
-	}
+	};
 		
 	$scope.getAnswers = function(question)
 	{
-		console.log("getAnswers called");
         return question.useDefaultAnswers ? $scope.survey.defaultAnswers : question.customAnswers;
 	}
 }]);
@@ -122,10 +184,6 @@ function($scope, surveyService, $location, SurveyResult)
         };
         surveyService.getSurveyData($scope.surveyID, function(data){
             $scope.survey = data;
-            if (!SurveyResult.getAuthFields() && $scope.survey.authFields && $scope.survey.authFields.length == 0)
-            {
-                $scope.goToLogin();
-            }
         });
     }
 ]);
