@@ -3,10 +3,11 @@
  */
 var mongo = require('mongodb');
 var Server = mongo.Server,
-    Db = mongo.Db,
-    BSON = mongo.BSONPure;
+    Db = mongo.Db;//,
+    //BSON = mongo.BSONPure;
+var config = require('../config');
 
-var server = new Server('localhost', 27017, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
+var server = new Server(config.db.host, config.db.port, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
 db = new Db('surveysdb', server);
 
 //Opening database connection
@@ -19,6 +20,10 @@ db.open(function(err,db){
                 populateDB();
             }
         });
+    }
+    else
+    {
+        console.log(err);
     }
 
 });

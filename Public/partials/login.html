@@ -7,7 +7,7 @@
     <div ng-repeat="authenticationField in survey.authenticationFields">
         <div>
             <!--<label for="{{authenticationField.fieldName}}">{{authenticationField.fieldLabel}}<span ng-show="authenticationField.isRequired">*</span>: </label> -->
-            <input type="text" class="form-control" ng-model="authenticationField.valueEntered" id="{{authenticationField.fieldName}}" placeholder="{{authenticationField.fieldLabel +
+            <input type="{{authenticationField.fieldType}}" class="form-control" ng-model="authenticationField.valueEntered" id="{{authenticationField.fieldName}}" placeholder="{{authenticationField.fieldLabel +
             (authenticationField.isRequired ? ' *' : '')}}"/>
         </div>
     </div>

@@ -2,7 +2,7 @@
 <p class="small">Check all that apply</p>
 <div ng-repeat= "answer in question.answers" class="answerBlock">
     <label class="answer"><div>
-        <input type="checkbox" ng-change="valueChanged()" id="{{answer.id}}" ng-model="answer.selected" ng-value="{{answer}}">{{answer.answerText}}</input>
-        <input type="text" ng-if="answer.textField" ng-disabled="!answer.selected" ng-model="answer.textEntered" class="form-control"/>
+        <input type="checkbox" ng-change="valueChanged()" id="{{answer.id}}" checklist-model="question.selectedAnswer" checklist-value="answer">{{answer.answerText}}</input>
+        <input type="text" ng-if="answer.textField" ng-disabled="question.selectedAnswer.indexOf(answer) == -1" ng-model="answer.textEntered" class="form-control"/>
 </div></label>
 </div>

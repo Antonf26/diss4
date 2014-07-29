@@ -17,6 +17,7 @@
 {
     color:#4e5157;
     color: white;
+    background-color: #4E5157;
 }
 
 .answer
@@ -39,7 +40,6 @@ body
 {
     background-color: #4E5157;
     padding-top: 40px;
-    padding-bottom: 40px;
 }
 
 .loginForm
@@ -112,6 +112,8 @@ label
     margin: 0;
 }
 
+
+
 .answerText
 {
     font-size: 1.25em;
@@ -151,4 +153,53 @@ textarea{
 .highlightError
 {
     background-color: lightpink !important;
+}
+
+#surveyFooter
+{
+    background-color: #4E5157;
+}
+
+#submitbtn
+{
+    margin-top : 5px;
+    margin-bottom: 5px;
+
+}
+
+
+
+
+@media (min-width: 768px) {
+    .progress {
+        margin-top: 12px;
+        height: 30px;
+    }
+    .progress span {
+
+        padding-top: 5px;
+        display: inline-block;
+    }
+}
+@media (max-width: 767px)
+{
+    .progress{
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    html, body{
+        height:100%
+        margin: 0;
+    }
+    .questionDiv
+    {
+        min-height: 100%;
+    }
+}
+
+.progress-bar
+{
+    color:black;
+    white-space:nowrap;
 }

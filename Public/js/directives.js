@@ -31,6 +31,7 @@ surveyDirectives.directive('ngQuestion', function(){
             else //if this is a multiple choice question, handling answers, etc.
             {
                 $scope.question.answers = $scope.question.useDefaultAnswers ? $scope.defanswers : $scope.question.customAnswers;
+                $scope.question.selectedAnswer = [];
                 if ($scope.question.selectMultiple) {
                     $scope.templateURL = "../partials/multianswertemplate.html";
                 }

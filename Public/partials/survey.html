@@ -1,8 +1,15 @@
 <div class="surveyInstruction"><h1>Please answer the questions below.</h1>
     <p>{{survey.surveyHeading}}</p>
     <p><small>* - Denotes required question.</small></p></div>
-<div ng-question ng-repeat="question in survey.questions" qindex="$index" id="{{'questDiv' + question.id}}" question="question" defanswers="survey.defaultAnswers"
+<div ng-question ng-repeat="question in survey.questions" qindex="$index" id="{{'questDiv' + question.id}}" question="question" defanswers="survey.defaultAnswers" class="questionDiv"
      ></div>
 </div>
 
-<div class="row"><div class="col-sm-10"></div><div class="col-sm-2"><input type="button" ng-click="complete()" value="Done" class="btn btn-success btn-lg btn-block"/></div></div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom" id="surveyFooter" role="presentation">
+    <div class="container">
+        <div class="row"><div class="col-sm-10"><progressbar animate="true"  type="{{progressType}}" value="getPercentAnswered()"><span>{{getNumberAnswered()}}/{{totalQuestions}} Questions Answered</span></progressbar>
+            </div><div class="col-sm-2"><input type="button" ng-click="complete()" value="Submit" id="submitbtn" class="btn btn-success btn-lg btn-block"/></div></div>
+    </div>
+</nav>
+

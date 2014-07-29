@@ -1,5 +1,5 @@
 <p class="questionText"  ng-class="{highlightError : question['error']}">{{questionInd}}.{{question.questionText}}<span class="requiredStar" ng-if="question.isRequired"> *</span></p>
 <div class="answerBlock">
-    <textarea ng-change="valueChanged()" ng-model="question.selectedAnswer" class="form-control" ng-if="(!question.maxLength || question.maxLength > 100)"></textarea>
-    <input type="text" ng-change="valueChanged()" ng-model="question.selectedAnswer" class="form-control" ng-if="question.maxLength <= 100"/>
+    <textarea ng-change="valueChanged()" ng-model="question.selectedAnswer" placeholder="Please enter your answer" class="form-control" ng-if="(!question.maxLength || question.maxLength > 100)"></textarea>
+    <input type="text" ng-change="valueChanged()" ng-model="question.selectedAnswer" placeholder="Please enter your answer" class="form-control" ng-if="question.maxLength <= 100"/>
 </div>

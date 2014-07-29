@@ -56,7 +56,6 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
             var questionResults = [];
             for (var q in questions)
             {
-                if (!questions[q].selectMultiple) {
                     questionResults.push(
                         {
                             questionText: questions[q].questionText,
@@ -64,19 +63,6 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
                             questionId: questions[q].id
                         }
                     )
-                }
-                else
-                {
-                    var selectedAnswers = questions[q].answers.filter(function(a){return a.selected});
-                    questionResults.push(
-                        {
-                            questionText: questions[q].questionText,
-                            selectedAnswer: selectedAnswers ? selectedAnswers : "Not Answered",
-                            questionId: questions[q].id
-                        }
-                    )
-                }
-
             }
             return questionResults;
         };

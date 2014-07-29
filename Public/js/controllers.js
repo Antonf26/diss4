@@ -118,7 +118,9 @@ surveyControllers.controller('consentController',
 surveyControllers.controller('questionController',
     ['$scope', 'SurveyResult', '$location', 'surveyService',
     function($scope, SurveyResult, $location, surveyService){
-	
+
+    $scope.progressType = 'info';
+
 	$scope.goToLogin = function()
 	{
 		$location.url('/login');
@@ -131,9 +133,36 @@ surveyControllers.controller('questionController',
         }
     });
 
+    $scope.getNumberAnswered = function()
+    {
+        if ($scope.survey)
+        {
+            var numAnswered = $scope.survey.questions.filter(isAnswered).length;
+            $scope.progressType = numAnswered == $scope.totalQuestions ? 'success' : 'info';
+            return numAnswered;
+        }
+    };
+    $scope.getPercentAnswered = function()
+    {
+        return $scope.getNumberAnswered()/$scope.totalQuestions * 100;
+    };
+    var isAnswered = function(question)
+    {
+        return (question.selectedAnswer && question.selectedAnswer.length!= 0);
+    };
+
+    $scope.allAnswered = function()
+    {
+        return $scope.getNumberAnswered() == $scope.totalQuestions;
+    };
+
+
+    $scope.totalQuestions = 0;
+
     surveyService.getSurveyData($scope.surveyID, function(data){
         $scope.survey = data;
-
+        $scope.totalQuestions = data.questions.length;
+        setBodyMargin();
     });
 		
     $scope.complete = function()
@@ -145,15 +174,7 @@ surveyControllers.controller('questionController',
 
             if(question.isRequired ) //checking for any unanswered and required questions
             {
-                if(question.selectMultiple)
-                {
-                    if(question.answers.filter(function(a){return a.selected}).length == 0) {
-                        unansweredRequired.push($scope.survey.questions[i].id);
-                        $scope.survey.questions[i]["error"] = true;
-                    }
-                }
-                else
-                    if (!question.selectedAnswer)
+                    if (!question.selectedAnswer || question.selectedAnswer.length == 0)
                     {
                         unansweredRequired.push($scope.survey.questions[i].id);
                         $scope.survey.questions[i]["error"] = true;
