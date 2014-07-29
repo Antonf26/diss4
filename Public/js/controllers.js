@@ -34,24 +34,43 @@ surveyControllers.controller('loginController', [
 	{
 
 
+
     $scope.handleLogin = function()
     {
         toastr.clear();
+        var hasIncomplete = false;
         for(var i in $scope.survey.authenticationFields)
         {
             if($scope.survey.authenticationFields[i].isRequired && !$scope.survey.authenticationFields[i].valueEntered)
             {
-                toastr.error("Please complete all required fields");
-                return;
+                $scope.survey.authenticationFields[i]['error']=true;
+                hasIncomplete = true;
+            }
+            else
+            {
+                $scope.survey.authenticationFields[i]['error']=false;
             }
         }
+        if(hasIncomplete)
+        {
+            toastr.error("Please complete all required fields");
+            return;
+        }
+
 
         SurveyResult.setSurveyId($scope.survey._id);
-        if($scope.survey.authenticationFields)
-        {
-            SurveyResult.setAuthFields($scope.survey.authenticationFields);
-        }
-        $location.url('/consent')
+        $scope.showError= false;
+        surveyService.authenticate($scope.surveyID, $scope.survey.authenticationFields, function(successful, authFields) {
+            if (successful)
+            {
+                SurveyResult.setAuthFields(authFields);
+                $location.url('/consent')
+            }
+            else
+            {
+                $scope.showError = true;
+            }
+        });
     };
     surveyService.getSurveyData($scope.surveyID, function(data)
     {
@@ -76,7 +95,7 @@ surveyControllers.controller('consentController',
     {
         if (!authenticated)
         {
-            $scope.goToLogin();
+           // $scope.goToLogin();
         }
     });
     $scope.goToSurvey = function()
@@ -91,6 +110,7 @@ surveyControllers.controller('consentController',
                 if(!crit.agreed)
                 {
                     $scope.allCompleted = false;
+                    crit['error'] = true;
                 }
 
             });
@@ -101,12 +121,15 @@ surveyControllers.controller('consentController',
         }
         else
         {
-            toastr.error("You must agree to all the above criteria to proceed");
+            toastr.error("You must agree to all the below criteria to proceed");
         }
     };
    surveyService.getSurveyData($scope.surveyID, function(data){
             $scope.survey = data;
-
+            if($scope.survey.requiresAuthentication)
+            {
+                $scope.goToLogin();
+            }
            if(!$scope.survey.acceptanceCriteria || $scope.survey.acceptanceCriteria.length == 0)
                 {
                     $scope.goToSurvey();
@@ -129,7 +152,7 @@ surveyControllers.controller('questionController',
     {
         if (!authenticated)
         {
-            $scope.goToLogin();
+         //   $scope.goToLogin();
         }
     });
 
@@ -167,6 +190,7 @@ surveyControllers.controller('questionController',
 		
     $scope.complete = function()
 	{
+        toastr.clear();
         var unansweredRequired = new Array();
         for(i in $scope.survey.questions)
         {
@@ -183,6 +207,7 @@ surveyControllers.controller('questionController',
         }
         if (unansweredRequired.length > 0)
         {
+            scrollToElement('questDiv' + unansweredRequired[0]); //scrolling the page to the first unanswered required question for user clarity
             toastr.error("Please answer all required questions to proceed");
             return;
         }

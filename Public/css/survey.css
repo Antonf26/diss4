@@ -58,9 +58,24 @@ body
 
 }
 
+.loginForm .alert
+{
+    font-size: 0.6em;
+    color: red;
+    margin-bottom: 0;
+    padding: 0 15px;
+
+}
+
 .consentRow
 {
     padding: 3px;
+}
+
+small
+{
+    font-size: 0.5em;
+    line-height: normal;
 }
 
 .consentRow input
@@ -202,4 +217,10 @@ textarea{
 {
     color:black;
     white-space:nowrap;
+}
+
+.errorText
+{
+    color:red;
+    font-size: 0.75em;
 }

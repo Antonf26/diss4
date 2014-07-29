@@ -3,14 +3,20 @@
     <div>
         <h2>Welcome!</h2>
         <p ng-bind="survey.introText"></p>
+        <small ng-if="showError" class="errorText" >Login failed - please check your password</small>
     </div>
     <div ng-repeat="authenticationField in survey.authenticationFields">
         <div>
-            <!--<label for="{{authenticationField.fieldName}}">{{authenticationField.fieldLabel}}<span ng-show="authenticationField.isRequired">*</span>: </label> -->
-            <input type="{{authenticationField.fieldType}}" class="form-control" ng-model="authenticationField.valueEntered" id="{{authenticationField.fieldName}}" placeholder="{{authenticationField.fieldLabel +
+            <div class="alert alert-warning" role="alert" ng-if="authenticationField['error']">
+                Please complete this field
+            </div>
+            <input type="{{authenticationField.fieldType}}" ng-class="{'has-error' : authenticationField['hasError']}" class="form-control" ng-model="authenticationField.valueEntered" id="{{authenticationField.fieldName}}" placeholder="{{authenticationField.fieldLabel +
             (authenticationField.isRequired ? ' *' : '')}}"/>
-        </div>
-    </div>
-    <input type="submit" value="GO!" class="btn btn-success btn-lg btn-block"/>
 
+        </div>
+
+    </div>
+
+    <input type="submit" value="GO!" class="btn btn-success btn-lg btn-block"/>
+    <div><small><p>{{survey.introFooter}}</p></small></div>
 </form>

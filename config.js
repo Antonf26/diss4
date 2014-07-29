@@ -8,6 +8,7 @@ config.db={};
 
 config.web.port = 8080; //port for server to listen on
 config.web.developmentRoutes = true; //whether we're enabling development-related routes
+config.web.tokenSecret = "SecretString"; //string used encode token //TODO: change to something more sensible
 
 config.db.host = 'localhost'; //host of db
 config.db.port = 27017; //posrt of db

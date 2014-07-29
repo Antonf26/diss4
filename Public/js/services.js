@@ -5,9 +5,11 @@ surveyAppServices.factory('surveyService', ['$http',
 function($http) {
     var survey = {};
     survey.surveyData = null;
+    survey.UserToken = null;
+
     survey.getSurveyData = function(surveyID, callback)
     {
-		if(survey.surveyData && survey.surveyData._id == surveyID)  //if we already have the data
+		if(survey.surveyData && survey.surveyData._id == surveyID && !survey.surveyData.requiresAuthentication)  //if we already have the data and we've authenticated
         {
             callback(survey.surveyData);
         }
@@ -26,8 +28,47 @@ function($http) {
     survey.retrieve = function(surveyID)
     {
         console.log(surveyID);
-        return $http.get('/surveys/' + surveyID);
+        token = survey.getUserToken(surveyID);
+
+        return $http.get('/surveys/' + surveyID, {headers: {'x-access-token' : token}});
     };
+
+    survey.authenticate = function(surveyID, authFields, callback)
+    {
+        $http(
+            {
+                url: '/authenticate',
+                method: 'POST',
+                data: JSON.stringify({surveyID: surveyID, authFields: authFields}),
+                headers: {'Content-Type': 'application/json'}
+            }).success(function (data){
+                survey.setUserToken(surveyID, data.token);
+                callback(true, data.authFields);
+            }).error(function(data)
+            {
+                callback(false);
+            })
+    };
+
+    survey.setUserToken = function(surveyID, token)
+    {
+        survey.UserToken = {surveyID: token};
+        amplify.store.sessionStorage("token" + surveyID, token);
+    };
+
+    survey.getUserToken = function(surveyID)
+    {
+      if(survey.UserToken && survey.UserToken.surveyID)
+      {
+          return survey.UserToken.surveyID;
+      }
+      else if (amplify.store.sessionStorage("token" + surveyID))
+      {
+          return amplify.store.sessionStorage("token" + surveyID);
+      }
+      return null;        //if we don't have a token cached or stored
+    };
+
 
     return survey;
 }]);
@@ -94,7 +135,7 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
         result.setAuthFields = function (authData)
         {
             result.authFields = authData;
-            amplify.store(result.surveyID, authData);
+            amplify.store(result.getSurveyId(), authData);
             result.authenticated = true; //add some validation here or on controller
             console.log(authData);
         };

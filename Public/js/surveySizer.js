@@ -9,3 +9,12 @@ var setBodyMargin = function()
     $('body').css('margin-bottom', height + 5);
 };
 $(window).resize(setBodyMargin);
+
+
+var scrollToElement = function(elementID) {
+    var element = $('#' + elementID);
+    $('body').animate(
+        {
+            scrollTop: element.offset().top - 15
+        });
+};
