@@ -4,6 +4,7 @@
 var surveyDirectives = angular.module('surveyDirectives', []);
 
 surveyDirectives.directive('ngQuestion', function(){
+
     return {
         restrict: 'A',
         scope: {
@@ -12,20 +13,16 @@ surveyDirectives.directive('ngQuestion', function(){
             qindex: '='
 
         },
-        controller: ["$scope", function($scope)
-        {
+        controller: ["$scope", '$timeout', function ($scope, $timeout) {
             $scope.questionInd = $scope.qindex + 1;
 
-            $scope.valueChanged = function()
-            {
-                if($scope.question.isRequired)
-                {
+            $scope.valueChanged = function () {
+                if ($scope.question.isRequired) {
                     $scope.question['error'] = false;
                 }
             };
 
-            if($scope.question.textEntry)
-            {
+            if ($scope.question.textEntry) {
                 $scope.templateURL = "../partials/textanswertemplate.html";
             }
             else //if this is a multiple choice question, handling answers, etc.
@@ -40,8 +37,17 @@ surveyDirectives.directive('ngQuestion', function(){
                 }
             }
 
-        }],
-        template: '<div ng-include="templateURL"></div>'
 
+        }],
+        template: '<div ng-include="templateURL"></div>',
+        link: function($scope, $element, $attrs, $timeout)
+        {
+
+            if ($scope.$last)
+            {
+                console.log('last');
+            }
+        }
     }
+
 });

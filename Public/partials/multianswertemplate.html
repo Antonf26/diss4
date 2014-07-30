@@ -1,8 +1,11 @@
 <p class="questionText" ng-class="{highlightError : question['error']}">{{questionInd}}. {{question.questionText}}<span class="requiredStar" ng-if="question.isRequired"> *</span></p>
 <p class="small">Check all that apply</p>
-<div ng-repeat= "answer in question.answers" class="answerBlock">
-    <label class="answer"><div>
+<div class="answerBlock" id="{{'answerBlock' + question.id}}">
+<div ng-repeat= "answer in question.answers" class="answerDiv">
+    <label class="answer">
+        <div class="answerComponents">
         <input type="checkbox" ng-change="valueChanged()" id="{{answer.id}}" checklist-model="question.selectedAnswer" checklist-value="answer">{{answer.answerText}}</input>
-        <input type="text" ng-if="answer.textField" ng-disabled="question.selectedAnswer.indexOf(answer) == -1" ng-model="answer.textEntered" class="form-control"/>
+        <input type="text" ng-if="answer.textField" ng-disabled="question.selectedAnswer.indexOf(answer) == -1" ng-model="answer.textEntered" class=""/>
 </div></label>
+</div>
 </div>

@@ -1,81 +1,89 @@
-.answer {
-    width: 100%;
-    cursor: pointer;
+.answer
+{
+    width:100%;
+    cursor:pointer;
     font-size: 1.25em;
     padding-left: 2%;
-    margin:0;
 }
 
-.answer:hover {
+.answer:hover
+{
     background-color: #6278A3;
 }
+
 
 .answerBlock {
     display: flex;
     justify-content: flex-start;
-   /* flex-wrap: wrap;*/
-    flex-direction: column;
+    flex-wrap: wrap;
 
 }
 
-.controlDiv {
+.controlDiv{
     display: inline;
 }
 
-@media all and (max-width: 800px) {
-    .answerBlock {
+@media all and (max-width: 800px){
+    .answerBlock{
         flex-direction: column;
     }
 }
 
-.container {
-    color: #4e5157;
+.container
+{
+    color:#4e5157;
     color: white;
-
+    background-color: #4E5157;
 }
 
-.answerText {
+.answerText
+{
     padding-left: 5%;
     display: inline;
 }
 
-.answerDiv {
+.answerDiv
+{
     flex-grow: 1;
     flex-shrink: 0;
 
+}
+
+.answer.p
+{
 
 }
 
-.answer.p {
-
-}
-
-.surveyInstruction {
+.surveyInstruction
+{
     margin-bottom: 5%;
 }
 
-body {
-    background-color: #7D9C9F;
+
+body
+{
+    background-color: #4E5157;
     padding-top: 40px;
 }
 
-.loginForm {
+.loginForm
+{
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
     font-size: 1.5em;
-    background-color: #7D9C9F;
-    color: #ECECEC;
 }
 
-.loginForm input {
+.loginForm input
+{
     margin-bottom: 10px;
 
-    height: auto;
+    height:auto;
 
 }
 
-.loginForm .alert {
+.loginForm .alert
+{
     font-size: 0.6em;
     color: red;
     margin-bottom: 0;
@@ -83,147 +91,160 @@ body {
 
 }
 
-.consentRow {
+.consentRow
+{
     padding: 3px;
 }
 
-small {
+small
+{
     font-size: 0.5em;
     line-height: normal;
 }
 
-.consentRow input {
+.consentRow input
+{
     margin: 0 auto;
 }
 
-.consentForm {
+.consentForm
+{
 
     margin: 0 auto;
     font-size: 1.5em;
 }
 
-label {
+label
+{
     font-weight: normal;
 }
 
-.consentForm button {
+.consentForm button
+{
     min-width: 250px;
 }
 
-.consentItems:nth-child(even) {
+.consentItems:nth-child(even)
+{
     background: darkgray;
 }
 
-.consentItems {
+.consentItems
+{
     margin-bottom: 5px;
 }
 
-.surveyInstruction {
+.surveyInstruction
+{
     background-color: #6E737B;
 }
 
-.questionBlock {
+.questionBlock
+{
     margin-bottom: 3px;
 }
 
-.answerComponents{
-    display: inline;
-    text-align: justify;
-}
-
-.questionText {
+.questionText
+{
     font-size: 1.5em;
     background-color: #6E737B;
     margin: 0;
-    margin-top: 5px;
 }
 
-.answerText {
+
+
+.answerText
+{
     font-size: 1.25em;
 }
-
-.answerBlock:nth-child(even) {
+.answerBlock:nth-child(even)
+{
     background-color: #383838;
 }
 
-.confirmation {
+.confirmation
+{
     font-size: 1.5em;
 }
 
-.viewFade.ng-enter {
+.viewFade.ng-enter
+{
     transition: 0.1s linear all;
     opacity: 0;
 }
 
-.viewFade.ng-enter-active {
+.viewFade.ng-enter-active
+{
     opacity: 1;
 }
 
 input[type=text] {
     color: #4E5157;
 }
-
-textarea {
+textarea{
     color: #4E5157;
 }
 
-.right {
-    float: right;
+.right{
+    float:right;
 }
 
-.highlightError {
+.highlightError
+{
     background-color: lightpink !important;
 }
 
-#surveyFooter {
+#surveyFooter
+{
     background-color: #4E5157;
 }
 
-#submitbtn {
-    margin-top: 5px;
+#submitbtn
+{
+    margin-top : 5px;
     margin-bottom: 5px;
 
 }
+
+
+
 
 @media (min-width: 768px) {
     .progress {
         margin-top: 12px;
         height: 30px;
     }
-
     .progress span {
 
         padding-top: 5px;
         display: inline-block;
     }
 }
-
-@media (max-width: 767px) {
-    .progress {
+@media (max-width: 767px)
+{
+    .progress{
         margin-top: 5px;
         margin-bottom: 5px;
     }
 
-    html, body {
-        height: 100% margin : 0;
+    html, body{
+        height:100%
+        margin: 0;
     }
-
-    .questionDiv {
+    .questionDiv
+    {
         min-height: 100%;
-
     }
 }
 
-.questionDiv{
-    margin-bottom: 5px;
+.progress-bar
+{
+    color:black;
+    white-space:nowrap;
 }
 
-.progress-bar {
-    color: black;
-    white-space: nowrap;
-}
-
-.errorText {
-    color: red;
+.errorText
+{
+    color:red;
     font-size: 0.75em;
 }

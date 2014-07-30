@@ -139,8 +139,8 @@ surveyControllers.controller('consentController',
 
 
 surveyControllers.controller('questionController',
-    ['$scope', 'SurveyResult', '$location', 'surveyService',
-    function($scope, SurveyResult, $location, surveyService){
+    ['$scope', 'SurveyResult', '$location', 'surveyService', '$timeout',
+    function($scope, SurveyResult, $location, surveyService, $timeout){
 
     $scope.progressType = 'info';
 
@@ -186,6 +186,7 @@ surveyControllers.controller('questionController',
         $scope.survey = data;
         $scope.totalQuestions = data.questions.length;
         setBodyMargin();
+        $timeout(positionAnswers, 200);
     });
 		
     $scope.complete = function()

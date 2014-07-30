@@ -14,7 +14,7 @@ var jsonWebToken = require('jwt-simple');
 
 
 var app= express();
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/Views');
 app.set('jwtTokenSecret', config.web.tokenSecret);
 
 app.use(bodyParser.json()); //allows for parsing json - used for storing result
