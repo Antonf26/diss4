@@ -191,7 +191,7 @@ surveyControllers.controller('questionController',
                 SurveyResult.setQuestions($scope.survey.questions); //storing questions in the appropriate service
                 var savePromise = SurveyResult.save($scope.surveyID); //submitting the survey
                 savePromise.success($location.url('/confirmation')); //if successful, moving on to confirmation page
-                savePromise.fail(toastr.error("Something went wrong, please try again"));
+                savePromise.error(toastr.error("Something went wrong, please try again"));
             };
         }]);
 
