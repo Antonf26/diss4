@@ -2,12 +2,16 @@
     width: 100%;
     cursor: pointer;
     font-size: 1.25em;
-    padding-left: 2%;
     margin:0;
+    padding: 5px 0 5px 2%;
 }
 
-.answer:hover {
-    background-color: #6278A3;
+.answerDiv:hover {
+    background-color: #E8980C !important;
+}
+
+.selectedAnswer {
+    background-color: #E8980D !important;
 }
 
 .answerBlock {
@@ -30,7 +34,7 @@
 
 .container {
     color: #4e5157;
-    color: white;
+
 
 }
 
@@ -51,11 +55,12 @@
 }
 
 .surveyInstruction {
-    margin-bottom: 5%;
+    padding: 10px;
+    background-color: #B0E3E8;
 }
 
 body {
-    background-color: #7D9C9F;
+    background-color: #4E5157;  /*#92BBBF; */
     padding-top: 40px;
 }
 
@@ -64,8 +69,9 @@ body {
     padding: 15px;
     margin: 0 auto;
     font-size: 1.5em;
-    background-color: #7D9C9F;
-    color: #ECECEC;
+    background-color: #C2F9FF;
+    border-radius: 10px;
+
 }
 
 .loginForm input {
@@ -75,16 +81,37 @@ body {
 
 }
 
+.consentForm{
+    padding: 0 0 15px;
+    border-radius: 10px;
+    background-color: #C2F9FF;
+    margin: 0 auto;
+    font-size: 1.5em;
+}
+
+#consentBtn{
+    margin-right: 5px;
+}
+
 .loginForm .alert {
     font-size: 0.6em;
     color: red;
     margin-bottom: 0;
-    padding: 0 15px;
+    padding: 0 0 15px;
 
 }
 
+.consentHeader{
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+
+}
+
+
 .consentRow {
-    padding: 3px;
+    padding: 3px 10px;
+    text-align: justify;
 }
 
 small {
@@ -96,11 +123,7 @@ small {
     margin: 0 auto;
 }
 
-.consentForm {
 
-    margin: 0 auto;
-    font-size: 1.5em;
-}
 
 label {
     font-weight: normal;
@@ -111,15 +134,17 @@ label {
 }
 
 .consentItems:nth-child(even) {
-    background: darkgray;
+    background: floralwhite;
 }
 
 .consentItems {
     margin-bottom: 5px;
 }
 
-.surveyInstruction {
-    background-color: #6E737B;
+.questionInstruction{
+    margin-bottom: 0;
+    color: #E8980C;
+   font-size: 50%
 }
 
 .questionBlock {
@@ -133,21 +158,35 @@ label {
 
 .questionText {
     font-size: 1.5em;
-    background-color: #6E737B;
+    background-color: #B0E3E8;
     margin: 0;
-    margin-top: 5px;
+
+    padding-left: 5px;
 }
+
+#surveyBody
+{
+    /*background-color: #C2F9FF;*/
+    
+    border-radius: 10px;
+    padding-bottom: 5px;
+}
+
+
 
 .answerText {
     font-size: 1.25em;
 }
 
-.answerBlock:nth-child(even) {
-    background-color: #383838;
+.answerDiv:nth-child(even) {
+    background-color: #90D6DE;
 }
-
+.answerDiv{
+    background-color: #A1E8F0;
+}
 .confirmation {
     font-size: 1.5em;
+    background-color: #C2F9FF;
 }
 
 .viewFade.ng-enter {
@@ -177,6 +216,7 @@ textarea {
 
 #surveyFooter {
     background-color: #4E5157;
+
 }
 
 #submitbtn {
@@ -210,13 +250,44 @@ textarea {
 
     .questionDiv {
         min-height: 100%;
-
     }
 }
 
 .questionDiv{
-    margin-bottom: 5px;
+
+    border-radius: 10px;
+    border-bottom: 3px solid #4E5157;
+
+
+
 }
+
+.optionText
+{
+    display:inline;
+    width: auto;
+    margin-top: -5px;
+    margin-bottom: -3px;
+}
+
+.questionDiv:first-child {
+    border-radius: 10px;
+    padding: 5px 0;
+
+}
+
+.logoutDiv
+{
+    text-align: right;
+
+
+}
+.logoutLink
+{
+    cursor:pointer;
+    margin: 10px 5px 0 0;
+}
+
 
 .progress-bar {
     color: black;

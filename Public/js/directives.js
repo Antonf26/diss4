@@ -3,7 +3,7 @@
  */
 var surveyDirectives = angular.module('surveyDirectives', []);
 
-surveyDirectives.directive('ngQuestion', function(){
+surveyDirectives.directive('ngQuestion', function () {
 
     return {
         restrict: 'A',
@@ -40,14 +40,8 @@ surveyDirectives.directive('ngQuestion', function(){
 
         }],
         template: '<div ng-include="templateURL"></div>',
-        link: function($scope, $element, $attrs, $timeout)
-        {
+        transclude: true
 
-            if ($scope.$last)
-            {
-                console.log('last');
-            }
-        }
     }
 
 });
