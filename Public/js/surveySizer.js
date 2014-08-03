@@ -9,12 +9,12 @@ var setBodyMargin = function()
     $('body').css('margin-bottom', height + 5);
 };
 
-
+//scrolls the body element to display the element with the ID provided
 var scrollToElement = function(elementID) {
     var element = $('#' + elementID);
     $('body').animate(
         {
-            scrollTop: element.offset().top - 15
+            scrollTop: element.offset().top - ($(window).height() /4) //scrolling body to the top of the element and positioning it a quarter of the viewport height away from the top
         });
 };
 

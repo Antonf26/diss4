@@ -6,8 +6,8 @@
     padding: 5px 0 5px 2%;
 }
 
-.answerDiv:hover {
-    background-color: #E8980C !important;
+.answerDiv:hover, .consentRow:hover {
+    background-color: #FFC35A !important;
 }
 
 .selectedAnswer {
@@ -36,6 +36,8 @@
     color: #4e5157;
 
 
+
+
 }
 
 .answerText {
@@ -54,9 +56,21 @@
 
 }
 
+#surveyBody input, #surveyBody textarea
+ {
+     border-radius: 0;
+ }
+
 .surveyInstruction {
     padding: 10px;
     background-color: #B0E3E8;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 10px solid #4E5157;
+}
+
+.surveyInstruction h1 {
+    margin-top: 0;
 }
 
 body {
@@ -74,6 +88,10 @@ body {
 
 }
 
+.confirmation a{
+    color: #E8980C;
+}
+
 .loginForm input {
     margin-bottom: 10px;
 
@@ -89,6 +107,10 @@ body {
     font-size: 1.5em;
 }
 
+.consentForm label{
+    display: inline;
+}
+
 #consentBtn{
     margin-right: 5px;
 }
@@ -101,17 +123,21 @@ body {
 
 }
 
+
 .consentHeader{
     text-align: center;
     margin: 0;
     padding: 10px;
+}
 
+.consentHeader h2{
+    margin-top: 0;
 }
 
 
-.consentRow {
+.consentRow, .buttonRow {
     padding: 3px 10px;
-    text-align: justify;
+    margin: 0;
 }
 
 small {
@@ -129,22 +155,31 @@ label {
     font-weight: normal;
 }
 
-.consentForm button {
-    min-width: 250px;
-}
 
-.consentItems:nth-child(even) {
-    background: floralwhite;
+.consentItems:nth-child(odd) {
+    background: #90D6DE;;
 }
 
 .consentItems {
     margin-bottom: 5px;
 }
 
-.questionInstruction{
+.questionInstruction {
     margin-bottom: 0;
+    padding-bottom: 3px;
     color: #E8980C;
-   font-size: 50%
+   font-size: 0.7em;
+    padding-left: 5px;
+}
+
+.surveyInstruction .small{
+    margin-bottom: 0;
+    padding-bottom: 3px;
+    color: #E8980C;
+}
+
+.requiredStar{
+    color: #E8980C;
 }
 
 .questionBlock {
@@ -156,11 +191,17 @@ label {
     text-align: justify;
 }
 
+.answerComponents span{
+    padding-left: 3px;
+}
+
 .questionText {
     font-size: 1.5em;
     background-color: #B0E3E8;
     margin: 0;
+}
 
+.questionText p{
     padding-left: 5px;
 }
 
@@ -181,12 +222,19 @@ label {
 .answerDiv:nth-child(even) {
     background-color: #90D6DE;
 }
+
+
+
 .answerDiv{
     background-color: #A1E8F0;
 }
 .confirmation {
     font-size: 1.5em;
     background-color: #C2F9FF;
+    max-width: 500px;
+    padding: 15px;
+    margin: 0 auto;
+    border-radius: 10px;
 }
 
 .viewFade.ng-enter {
@@ -211,7 +259,7 @@ textarea {
 }
 
 .highlightError {
-    background-color: lightpink !important;
+    background-color:  #FFD3CB !important;
 }
 
 #surveyFooter {
@@ -256,7 +304,7 @@ textarea {
 .questionDiv{
 
     border-radius: 10px;
-    border-bottom: 3px solid #4E5157;
+    border-bottom: 10px solid #4E5157;
 
 
 
@@ -272,7 +320,7 @@ textarea {
 
 .questionDiv:first-child {
     border-radius: 10px;
-    padding: 5px 0;
+
 
 }
 

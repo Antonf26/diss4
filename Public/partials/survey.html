@@ -1,10 +1,17 @@
 <div id="surveyBody">
 
-    <div class="surveyInstruction"><div class="logoutDiv"><span class="logoutLink" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</span></div><h1>Please answer the questions below.</h1>
+    <div class="surveyInstruction">
+        <div class="logoutDiv">
+            <button class="logoutLink btn btn-primary btn-xs" ng-click="logout()" ng-if="survey.authenticationFields">
+                Log Out
+            </button>
+        </div>
+        <h1>Please answer the questions below.</h1>
 
         <p>{{survey.surveyHeading}}</p>
-        <p>
-            <small>* - Denotes required question.</small>
+
+        <p class="small">
+            * - Denotes required question.
         </p>
     </div>
     <div ng-question ng-repeat="question in survey.questions" qindex="$index" id="{{'questDiv' + question.id}}"

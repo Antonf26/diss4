@@ -9,7 +9,7 @@ surveyControllers.controller('redirectController', [
     function ($scope, $location, SurveyResult, surveyService) {
         //handles redirection at entry point to the survey
         var redirect = function (surveyData) {
-            if (surveyData.authenticationFields && surveyData.authenticationFields.length > 0 || surveyData.requiresAuthentication) //go to login page if we need to authenticate
+            if (surveyData.requiresAuthentication) //go to login page if we need to authenticate
             {
                 $location.url('/login');
                 return;
@@ -165,7 +165,7 @@ surveyControllers.controller('questionController',
                 $scope.survey = data;
                 $scope.totalQuestions = data.questions.length;
                 setBodyMargin(); //jquery helper that adjust the bottom margin of the body to show the footer
-                $timeout(positionAnswers, 200); //jquery helper that positions answers horizontally or vertically depending on length and available width. Timer is a workaround to ensure DOM is populated
+                $timeout(positionAnswers, 400); //jquery helper that positions answers horizontally or vertically depending on length and available width. Timer is a workaround to ensure DOM is populated
             });
 
             $scope.complete = function ()  //when the user has pressed "Submit"
@@ -191,7 +191,6 @@ surveyControllers.controller('questionController',
                 SurveyResult.setQuestions($scope.survey.questions); //storing questions in the appropriate service
                 var savePromise = SurveyResult.save($scope.surveyID); //submitting the survey
                 savePromise.success($location.url('/confirmation')); //if successful, moving on to confirmation page
-                savePromise.error(toastr.error("Something went wrong, please try again"));
             };
         }]);
 

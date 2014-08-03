@@ -19,8 +19,6 @@ db.open(function(err,db){
         console.log("Connected to db");
         db.collection('surveys', {strict:true}, function(err,collection){
             if(err){
-                console.log("The collection doesn't exist. Creating");
-                populateDB();
             }
         });
     }
@@ -221,8 +219,7 @@ exports.addResult = function(req,res){
                         res.send({'error': 'An error has occurred'});
                     }
                     else {
-                        console.log('Success: ' + JSON.stringify(result[0]));
-                        res.send(result[0]);
+                        res.send(200, result[0]);
                     }
                 })
         })
@@ -257,20 +254,7 @@ exports.runSurvey = function(req,res){
 };
 	
 
-//Populates database with placeholder //TODO: Not needed in production!
-var populateDB = function() {
 
-    var surveys = [
-        {
-            name: "PlaceHolder"
-        }
-
-    ];
-    db.collection('surveys', function(err, collection){
-        collection.insert(surveys, {safe:true}, function (err, result){} );
-    });
-
-};
 
 
 

@@ -1,10 +1,10 @@
-<div class="questionText"><p  ng-class="{highlightError : question['error']}">{{questionInd}}. {{question.questionText}}<span class="requiredStar" ng-if="question.isRequired"> *</span></p>
+<div class="questionText"><p  ng-class="{highlightError : question['error']}">{{questionInd}}. {{question.questionText}}<span class="requiredStar" ng-if="question.isRequired">*</span></p>
 <p class="small questionInstruction">Select one answer</p></div>
 <div class="answerBlock" id="{{'answerBlock' + question.id}}">
 <div ng-repeat= "answer in question.answers" class="answerDiv" ng-class="{selectedAnswer : question.selectedAnswer.id == answer.id}">
     <label class="answer">
         <div class="answerComponents"><input type="radio" class="answerRadio" ng-change="valueChanged()" id="{{answer.id}}" ng-model="question.selectedAnswer" ng-value="{{answer}}"/><span>{{answer.answerText}}</span>
-        <input type="text"  class="right" ng-if="answer.textField" ng-model="question.selectedAnswer.textEntered" ng-disabled="question.selectedAnswer.id != answer.id"/></div>
+        <input type="text"  class="right" ng-if="answer.textField" ng-model="question.selectedAnswer.textEntered" ng-disabled="question.selectedAnswer.id != answer.id" ng-click="selectAnswer(answer)"/></div>
     </label>
 </div>
 </div>

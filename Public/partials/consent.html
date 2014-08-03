@@ -1,16 +1,18 @@
 
 <form ng-submit="goToSurvey()" class="consentForm">
-    <div class="logoutDiv"><span class="logoutLink" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</span></div>
+    <div class="logoutDiv"><button class="logoutLink btn btn-primary btn-xs" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</button></div>
     <div class="consentHeader"><h2  ng-bind="survey.acceptanceText"></h2></div>
     <div ng-repeat="consentItem in survey.acceptanceCriteria" class="consentItems">
-        <div class="row consentRow">
+        <div class="row consentRow" ng-class="{highlightError : consentItem['error'] && !consentItem.agreed}">
+            <label>
             <div class="col-xs-1">
                 <input type="checkbox" ng-model="consentItem.agreed" ng-change="toggleConsent()" id="{{$index}}"/>
             </div>
-            <div class="col-xs-11" ng-class="{highlightError : consentItem['error'] && !consentItem.agreed}">
-                <label for="{{$index}}">{{consentItem.consentText}}</label>
+            <div class="col-xs-10" >
+                <span>{{consentItem.consentText}}</span>
             </div>
+            </label>
         </div>
     </div>
-    <div class="row consentRow"><div class="col-sm-9"></div><div class="col-sm-3"><input type="submit" value="Proceed" class="btn btn-success btn-lg btn-block" id="consentBtn"/></div></div>
+    <div class="row buttonRow"><div class="col-sm-9"></div><div class="col-sm-3"><input type="submit" value="Proceed" class="btn btn-success btn-lg btn-block" id="consentBtn"/></div></div>
 </form>
