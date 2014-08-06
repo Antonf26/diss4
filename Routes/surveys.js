@@ -112,7 +112,7 @@ exports.authenticate = function(req, res){
                       else
                       {
                           var noPasswordFields = authFields.filter(function(field) {return field.fieldType.toUpperCase() != "PASSWORD"});
-                          var expiryDate = moment().add('minutes', 120).valueOf();
+                          var expiryDate = moment().add(120, 'minutes').valueOf();
                           var userToken = jsonWebToken.encode({
                               sub: surveyId,
                               exp: expiryDate
@@ -192,21 +192,35 @@ exports.deleteSurvey = function (req, res) {
 
 //Retrieves all results stored in DB
 exports.getResults = function(req,res){
-    db.collection('results', function(err, collection){
-        collection.find().toArray(function(err,items){
-            res.send(items);
+    var password = req.headers['x-password'];
+    if (password == 'Cardiff14') {
+        db.collection('results', function (err, collection) {
+            collection.find().toArray(function (err, items) {
+                res.send(items);
+            });
         });
-    });
+    }
+    else
+    {
+        res.send(401);
+    }
 };
 
 //Retrieves all results stored in DB for the survey ID provided
 exports.getResultsById = function(req,res){
-    var id = req.params.id.toUpperCase();
-    db.collection('results', function(err, collection){
-        collection.find({'surveyID':id}).toArray(function(err,items){
-            res.send(items);
+    var password = req.headers['x-password'];
+    if (password == 'Cardiff14') {
+        var id = req.params.id.toUpperCase();
+        db.collection('results', function (err, collection) {
+            collection.find({'surveyID': id}).toArray(function (err, items) {
+                res.send(items);
+            });
         });
-    });
+    }
+    else
+    {
+        res.send(401);
+    }
 };
 
 //Stores the result provided in the DB
