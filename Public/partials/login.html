@@ -1,8 +1,8 @@
 
 <form ng-submit="handleLogin()" class="loginForm">
     <div>
-        <h2>Welcome!</h2>
-        <p ng-bind="survey.introText"></p>
+        <h2>Welcome to {{survey.title}}!</h2>
+        <p ng-bind-html="survey.introText"></p>
         <small ng-if="showError" class="errorText" >Login failed - please check your password</small>
     </div>
     <div ng-repeat="authenticationField in survey.authenticationFields">
@@ -18,5 +18,5 @@
     </div>
 
     <input type="submit" value="GO!" class="btn btn-success btn-lg btn-block"/>
-    <div><small><p>{{survey.introFooter}}</p></small></div>
+    <div><p>{{survey.introFooter}}</p></div>
 </form>

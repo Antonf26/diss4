@@ -79,16 +79,16 @@ body {
 }
 
 .loginForm {
-    max-width: 330px;
+    max-width: 500px;
     padding: 15px;
     margin: 0 auto;
-    font-size: 1.5em;
+
     background-color: #C2F9FF;
     border-radius: 10px;
 
 }
 
-.confirmation a{
+.consentForm a, .loginForm a{
     color: #E8980C;
 }
 
@@ -106,6 +106,8 @@ body {
     margin: 0 auto;
     font-size: 1.5em;
 }
+
+
 
 .consentForm label{
     display: inline;
@@ -130,7 +132,7 @@ body {
     padding: 10px;
 }
 
-.consentHeader h2{
+.consentHeader h2, .consentHeader h3{
     margin-top: 0;
 }
 
@@ -231,7 +233,7 @@ label {
 .confirmation {
     font-size: 1.5em;
     background-color: #C2F9FF;
-    max-width: 500px;
+    max-width: 600px;
     padding: 15px;
     margin: 0 auto;
     border-radius: 10px;
@@ -345,4 +347,14 @@ textarea {
 .errorText {
     color: red;
     font-size: 0.75em;
+}
+
+@media all and (max-width: 800px) {
+    .consentForm {
+        font-size: inherit;
+    }
+
+    .confirmation{
+        font-size: inherit;
+    }
 }

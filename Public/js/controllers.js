@@ -206,6 +206,7 @@ surveyControllers.controller('confirmationController', ['$scope', 'surveyService
                 $scope.goToLogin();
             }
             $scope.survey = data;
+            surveyService.clearUserToken($scope.surveyID);
         });
     }
 ]);

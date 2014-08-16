@@ -7,11 +7,12 @@ config.web={};
 config.db={};
 
 config.web.port = 8080; //port for server to listen on
-config.web.developmentRoutes = false; //whether we're enabling development-related routes
+config.web.developmentRoutes = true; //whether we're enabling development-related routes
 config.web.tokenSecret = "SecretString"; //string used encode token
 
 config.db.host = 'localhost'; //host of db
 config.db.port = 27017; //posrt of db
+config.db.dbName = 'surveysdb';
 
 
 

@@ -1,23 +1,22 @@
 /**
  * Created by Anton on 28/06/2014.
  */
-var mongo = require('mongodb');
-var Server = mongo.Server,
-    Db = mongo.Db;//,
+
     //BSON = mongo.BSONPure;
 var config = require('../config');
+var dbConn = require('../dbConn');
 var jsonWebToken = require('jwt-simple');
 var moment = require('moment');
 var cryptoHelper = require('../cryptoHelper');
 
-var server = new Server(config.db.host, config.db.port, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
-db = new Db('surveysdb', server);
+//var server = new Server(config.db.host, config.db.port, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
+//db = new Db('surveysdb', server);
 
 //Opening database connection
-db.open(function(err,db){
+dbConn.db.open(function(err,db){
     if(!err){
         console.log("Connected to db");
-        db.collection('surveys', {strict:true}, function(err,collection){
+        dbConn.db.collection('surveys', {strict:true}, function(err,collection){
             if(err){
             }
         });
@@ -33,11 +32,16 @@ db.open(function(err,db){
 exports.findById = function(req, res){
     var id = req.params.id.toUpperCase();
     console.log("get survey" + id);
-    db.collection('surveys', function(err,collection){
+    //setting sepcial headers to avoid IE never refreshing the data once it's cached a response
+    res.setHeader("Expires", "-1");
+    res.setHeader("Cache-Control", "must-revalidate, private");
+
+    dbConn.db.collection('surveys', function(err,collection){
         collection.findOne({'_id':id}, function(err, item){
             if (err || !item)
             {
-                res.send(404, 'Survey with ID ' + id + ' not found')
+                res.send(404, 'Survey with ID ' + id + ' not found');
+                return;
             }
             if (!item.authenticationFields || item.authenticationFields.length == 0) //if there are no authentication fields, no need to bother with the tokens
             {
@@ -88,11 +92,11 @@ exports.authenticate = function(req, res){
         var authFields = req.body.authFields;
         var surveyId = req.body.surveyID;
         var password = authFields.filter(function(field) {return field.fieldType.toUpperCase() == "PASSWORD"})[0].valueEntered; //todo: check if there are no password fields, then just make a token?
-        db.collection('surveypasswords', function (err, collection)
+        dbConn.db.collection('surveypasswords', function (err, collection)
         {
            if(err)
            {
-               res.send(401, "Authentication Error" + exception.toString());
+               res.send(401, "Authentication Error" + err.toString());
            }
            collection.findOne({'surveyID': surveyId}, function(err,item)
            {
@@ -139,7 +143,7 @@ exports.authenticate = function(req, res){
 
 //Returns all surveys
 exports.findAll = function(req,res){
-    db.collection('surveys', function(err, collection){
+    dbConn.db.collection('surveys', function(err, collection){
         collection.find().toArray(function(err,items){
             res.send(items);
         });
@@ -149,7 +153,7 @@ exports.findAll = function(req,res){
 //Adds survey to DB (JSON must be provided in body)
 exports.addSurvey = function(req,res){
     var survey = req.body;
-    db.collection('surveys', function(err, collection){
+    dbConn.db.collection('surveys', function(err, collection){
         collection.insert(survey, {safe:true},
         function(err, result){
             if(err){
@@ -167,7 +171,7 @@ exports.addPassword = function (req,res){
     var id = req.body.surveyID;
     var password = req.body.password;
     cryptoHelper.hashPassword(password, function(hash){
-        db.collection('surveypasswords', function(err, collection){
+        dbConn.db.collection('surveypasswords', function(err, collection){
             collection.insert({'surveyID': id, 'password': hash}, function(err, item)
             {
                 if (err)
@@ -194,7 +198,7 @@ exports.deleteSurvey = function (req, res) {
 exports.getResults = function(req,res){
     var password = req.headers['x-password'];
     if (password == 'Cardiff14') {
-        db.collection('results', function (err, collection) {
+        dbConn.db.collection('results', function (err, collection) {
             collection.find().toArray(function (err, items) {
                 res.send(items);
             });
@@ -211,7 +215,7 @@ exports.getResultsById = function(req,res){
     var password = req.headers['x-password'];
     if (password == 'Cardiff14') {
         var id = req.params.id.toUpperCase();
-        db.collection('results', function (err, collection) {
+        dbConn.db.collection('results', function (err, collection) {
             collection.find({'surveyID': id}).toArray(function (err, items) {
                 res.send(items);
             });
@@ -226,7 +230,7 @@ exports.getResultsById = function(req,res){
 //Stores the result provided in the DB
 exports.addResult = function(req,res){
         var surveyResult = req.body;
-        db.collection('results', function (err, collection) {
+        dbConn.db.collection('results', function (err, collection) {
             collection.insert(surveyResult, {safe: true},
                 function (err, result) {
                     if (err) {
@@ -243,7 +247,7 @@ exports.addResult = function(req,res){
 exports.runSurvey = function(req,res){
     var id = req.params.id.toUpperCase();
     console.log("get survey" + id);
-    db.collection('surveys', function(err,collection){
+    dbConn.db.collection('surveys', function(err,collection){
         collection.count({'_id':id},
 		function(err, count){
 			if (err)

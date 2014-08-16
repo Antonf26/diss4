@@ -73,6 +73,7 @@ function($http) {
     {
         survey.UserToken = null;
         amplify.store.sessionStorage("token" + surveyID, null);
+        survey.clearSurveyData();
     };
 
     survey.clearSurveyData = function()

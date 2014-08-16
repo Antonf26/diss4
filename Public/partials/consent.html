@@ -1,7 +1,7 @@
 
 <form ng-submit="goToSurvey()" class="consentForm">
     <div class="logoutDiv"><button class="logoutLink btn btn-primary btn-xs" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</button></div>
-    <div class="consentHeader"><h2  ng-bind="survey.acceptanceText"></h2></div>
+    <div class="consentHeader"><h2>Consent Form</h2><h3  ng-bind="survey.acceptanceText"></h3></div>
     <div ng-repeat="consentItem in survey.acceptanceCriteria" class="consentItems">
         <div class="row consentRow" ng-class="{highlightError : consentItem['error'] && !consentItem.agreed}">
             <label>
@@ -9,7 +9,7 @@
                 <input type="checkbox" ng-model="consentItem.agreed" ng-change="toggleConsent()" id="{{$index}}"/>
             </div>
             <div class="col-xs-10" >
-                <span>{{consentItem.consentText}}</span>
+                <span ng-bind-html="consentItem.consentText"></span>
             </div>
             </label>
         </div>
