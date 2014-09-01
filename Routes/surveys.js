@@ -1,18 +1,11 @@
-/**
- * Created by Anton on 28/06/2014.
- */
 
-    //BSON = mongo.BSONPure;
 var config = require('../config');
 var dbConn = require('../dbConn');
 var jsonWebToken = require('jwt-simple');
 var moment = require('moment');
 var cryptoHelper = require('../cryptoHelper');
 
-//var server = new Server(config.db.host, config.db.port, {auto_reconnect: true}, {safe:false, w:0, journal:false, fsync:false});
-//db = new Db('surveysdb', server);
-
-//Opening database connection
+//Opening database connection //TODO: clean or remove
 dbConn.db.open(function(err,db){
     if(!err){
         console.log("Connected to db");
@@ -28,14 +21,22 @@ dbConn.db.open(function(err,db){
 
 });
 
-//Finds survey in DB based on ID provided in the request parameters, sends it on the response //TODO: If the survey has authentication fields and the user hasn't presented a token, return only the auth fields
+//Returns all surveys
+exports.findAll = function(req,res){
+    dbConn.db.collection('surveys', function(err, collection){
+        collection.find().toArray(function(err,items){
+            res.send(items);
+        });
+    });
+};
+
+//Finds survey in DB based on ID provided in the request parameters, sends it on the response
 exports.findById = function(req, res){
     var id = req.params.id.toUpperCase();
     console.log("get survey" + id);
-    //setting sepcial headers to avoid IE never refreshing the data once it's cached a response
+    //setting headers to avoid IE never refreshing the data once it's cached a response
     res.setHeader("Expires", "-1");
     res.setHeader("Cache-Control", "must-revalidate, private");
-
     dbConn.db.collection('surveys', function(err,collection){
         collection.findOne({'_id':id}, function(err, item){
             if (err || !item)
@@ -65,87 +66,14 @@ exports.findById = function(req, res){
                     authenticated = false;
                 }
             }
-
             if (authenticated)
             {
                 res.send(item);
             }
             else //this will be sent when there's no token and the survey requires authentication
             {
-                authonlySurvey = {};
-                authonlySurvey.authenticationFields = item.authenticationFields;
-                authonlySurvey.introText = item.introText;
-                authonlySurvey.title = item.title;
-                authonlySurvey._id = item._id;
-                authonlySurvey.introFooter = item.introFooter;
-                authonlySurvey.requiresAuthentication = true;
-                res.send(authonlySurvey);
+                res.send(createAuthOnlySurvey(item));
             }
-
-
-        });
-    });
-};
-
-exports.authenticate = function(req, res){
-    try {
-        var authFields = req.body.authFields;
-        var surveyId = req.body.surveyID;
-        var password = authFields.filter(function(field) {return field.fieldType.toUpperCase() == "PASSWORD"})[0].valueEntered; //todo: check if there are no password fields, then just make a token?
-        dbConn.db.collection('surveypasswords', function (err, collection)
-        {
-           if(err)
-           {
-               res.send(401, "Authentication Error" + err.toString());
-           }
-           collection.findOne({'surveyID': surveyId}, function(err,item)
-           {
-               if (err || !item)
-               {
-                   res.send(401, "Incorrect surveyID provided");
-               }
-               if(item)
-               {
-                   var hashed = item.password;
-                   cryptoHelper.checkPassword(password, hashed, function(matchedPasswords)
-                   {
-                      if(!matchedPasswords)
-                      {
-                          res.send(401, "Incorrect password provided");
-                      }
-                      else
-                      {
-                          var noPasswordFields = authFields.filter(function(field) {return field.fieldType.toUpperCase() != "PASSWORD"});
-                          var expiryDate = moment().add(120, 'minutes').valueOf();
-                          var userToken = jsonWebToken.encode({
-                              sub: surveyId,
-                              exp: expiryDate
-                          }, config.web.tokenSecret);
-
-                          res.json({
-                              token: userToken,
-                              expires: expiryDate,
-                              authFields: noPasswordFields
-                          });
-                      }
-                   });
-
-               }
-           })
-        });
-    }
-    catch (exception)
-    {
-        res.send(401, "Authentication Error" + exception.toString());
-    }
-
-};
-
-//Returns all surveys
-exports.findAll = function(req,res){
-    dbConn.db.collection('surveys', function(err, collection){
-        collection.find().toArray(function(err,items){
-            res.send(items);
         });
     });
 };
@@ -159,88 +87,226 @@ exports.addSurvey = function(req,res){
             if(err){
                 res.send({'error': 'An error has occurred'});
             }
-            else{
-                console.log('Success: ' + JSON.stringify(result[0]));
+            else
+            {
                 res.send(result[0]);
             }
         })
     })
 };
 
-exports.addPassword = function (req,res){
-    var id = req.body.surveyID;
-    var password = req.body.password;
-    cryptoHelper.hashPassword(password, function(hash){
-        dbConn.db.collection('surveypasswords', function(err, collection){
-            collection.insert({'surveyID': id, 'password': hash}, function(err, item)
-            {
-                if (err)
-                {
-                    console.log(err);
-                }
-                else
-                {
-                    console.log('added');
-                }
-            });
-        })
-    })
-
-};
-
-//Deletes survey in the DB
-exports.deleteSurvey = function (req, res) {
-    var id = req.params.id;
-
-};
-
-//Retrieves all results stored in DB
-exports.getResults = function(req,res){
-    var password = req.headers['x-password'];
-    if (password == 'Cardiff14') {
-        dbConn.db.collection('results', function (err, collection) {
-            collection.find().toArray(function (err, items) {
-                res.send(items);
-            });
-        });
-    }
-    else
+exports.updateSurvey = function(req,res)
+{
+    try
     {
-        res.send(401);
-    }
-};
-
-//Retrieves all results stored in DB for the survey ID provided
-exports.getResultsById = function(req,res){
-    var password = req.headers['x-password'];
-    if (password == 'Cardiff14') {
+        var survey = req.body;
         var id = req.params.id.toUpperCase();
-        dbConn.db.collection('results', function (err, collection) {
-            collection.find({'surveyID': id}).toArray(function (err, items) {
-                res.send(items);
-            });
+        dbConn.db.collection('surveys', function(err, collection)
+        {
+            collection.count({'_id':id},
+                function(err, count){
+                    if (err)
+                    {
+                        res.send('error ' + err);
+                    }
+                    else if (!count)
+                    {
+                        exports.addSurvey(req); //add the Survey as the id doesn't exist
+                    }
+                    else
+                    {
+                        collection.update({'_id':id}, survey, function(err, result)
+                        {
+                            if(err)
+                            {
+                                res.status(400).send("Error updating survey");
+                            }
+                            else
+                            {
+                                res.status(200).send("Survey Updated");
+                            }
+                        });
+                    }
+                });
         });
     }
-    else
+    catch (exception)
     {
-        res.send(401);
+        res.status(400).send('Error processing request');
     }
 };
 
-//Stores the result provided in the DB
-exports.addResult = function(req,res){
-        var surveyResult = req.body;
-        dbConn.db.collection('results', function (err, collection) {
-            collection.insert(surveyResult, {safe: true},
-                function (err, result) {
+exports.deleteAll = function(req, res)
+{
+    res.status(403).send("Deleting of all surveys disabled, please delete by ID");
+};
+
+exports.deleteById = function (req,res)
+{
+    try
+    {
+        var id = req.params.id.toUpperCase();
+        dbConn.db.collection('surveys', function(err, collection)
+        {
+            collection.count({'_id':id},
+                function(err, count){
+                    if (err)
+                    {
+                        res.status(400).send("Error processing request");
+                    }
+                    else if (!count)
+                    {
+                        res.status(400).send("Survey for deletion not found")
+                    }
+                    else
+                    {
+                        collection.remove({'_id':id}, function(err, result)
+                        {
+                            if(err)
+                            {
+                                res.status(400).send("Error deleting survey");
+                            }
+                            else
+                            {
+                                res.status(200).send("Survey Deleted");
+                            }
+                        });
+                    }
+                });
+        });
+    }
+
+    catch (exception){
+        res.status(400).send("Error processing request");
+    }
+
+};
+
+exports.addPassword = function (req,res){
+    try {
+        var id = req.body.surveyID;
+        var password = req.body.password;
+        if (!id || !password)
+        {
+            res.status(400).send("Please provide surveyID and password");
+        }
+        cryptoHelper.hashPassword(password, function (hash) {
+            dbConn.db.collection('surveypasswords', function (err, collection) {
+                collection.insert({'surveyID': id, 'password': hash}, function (err, item) {
                     if (err) {
-                        res.send({'error': 'An error has occurred'});
+                        console.log(err);
                     }
                     else {
-                        res.send(200, result[0]);
+                        console.log('added');
                     }
-                })
+                });
+            })
         })
+    }
+    catch (Exception){
+        res.status(400).send("Error reading request");
+    }
+
+};
+
+//Function to remove a particular password for a survey
+exports.deletePassword = function (req,res)
+{
+    try {
+        var id = req.body.surveyID;
+        var password = req.body.password;
+        if (!id || !password) {
+            res.status(400).send("Please provide surveyID and password");
+        }
+        cryptoHelper.hashPassword(password, function (hash) {
+            dbConn.db.collection('surveypasswords', function (err, collection) {
+                collection.findOne({'surveyID': id, 'password': hash}, function(err, item) //check if the password exists for this survey
+                {
+                    if (err)
+                    {
+                        res.status(400).send("Error reading request");
+                        return;
+                    }
+                    if(!item)
+                    {
+                        res.status(400).send("Password not found for deletion");
+                    }
+                    else
+                    {
+                        collection.remove({'surveyID': id, 'password': hash}, function (err, result)
+                        {
+                            if (err)
+                            {
+                                res.status(400).send("Error reading request");
+                            }
+                            else
+                            {
+                                res.status(200).send("Password removed")
+                            }
+                        });
+                    }
+                });
+            })
+        })
+    }
+    catch(Exception)
+    {
+        res.status(400).send("Error reading request");
+    }
+};
+
+
+exports.authenticate = function(req, res){
+    try {
+        var authFields = req.body.authFields;
+        var surveyId = req.body.surveyID;
+        var password = authFields.filter(function(field) {return field.fieldType.toUpperCase() == "PASSWORD"})[0].valueEntered; //todo: check if there are no password fields, then just make a token?
+        dbConn.db.collection('surveypasswords', function (err, collection)
+        {
+            if(err)
+            {
+                res.send(401, "Authentication Error" + err.toString());
+            }
+            collection.findOne({'surveyID': surveyId}, function(err,item)
+            {
+                if (err || !item)
+                {
+                    res.send(401, "Incorrect surveyID provided");
+                }
+                if(item)
+                {
+                    var hashed = item.password;
+                    cryptoHelper.checkPassword(password, hashed, function(matchedPasswords)
+                    {
+                        if(!matchedPasswords)
+                        {
+                            res.send(401, "Incorrect password provided");
+                        }
+                        else
+                        {
+                            var noPasswordFields = authFields.filter(function(field) {return field.fieldType.toUpperCase() != "PASSWORD"});
+                            var expiryDate = moment().add(120, 'minutes').valueOf();
+                            var userToken = jsonWebToken.encode({
+                                sub: surveyId,
+                                exp: expiryDate
+                            }, config.web.tokenSecret);
+
+                            res.json({
+                                token: userToken,
+                                expires: expiryDate,
+                                authFields: noPasswordFields
+                            });
+                        }
+                    });
+                }
+            })
+        });
+    }
+    catch (exception)
+    {
+        res.send(401, "Authentication Error" + exception.toString());
+    }
+
 };
 
 //Used for running the surveys - checks for existence of survey
@@ -264,14 +330,29 @@ exports.runSurvey = function(req,res){
 				title: 'Survey ' + id,
 				surveyID: id
 			}
-
 			);
 			}
         });
     });
 };
-	
 
+
+//Function creates a version of the survey object without any content except for authentication-relevant information
+var createAuthOnlySurvey = function(surveyItem)
+{
+    if (!surveyItem)
+    {
+        return null;
+    }
+    var authOnlySurvey = {};
+    authOnlySurvey.authenticationFields = surveyItem.authenticationFields;
+    authOnlySurvey.introText = surveyItem.introText;
+    authOnlySurvey.title = surveyItem.title;
+    authOnlySurvey._id = surveyItem._id;
+    authOnlySurvey.introFooter = surveyItem.introFooter;
+    authOnlySurvey.requiresAuthentication = true;
+    return authOnlySurvey;
+};
 
 
 

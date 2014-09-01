@@ -31,15 +31,6 @@ cryptoHelper.checkPassword = function(password, hash, callback)
     });
 };
 
-//cryptoHelper.hashPassword("Cardiff14", function(hash)
-//{
-//    console.log(hash);
-//    cryptoHelper.checkPassword("Cardiff14", hash, function(matched)
-//    {
-//        console.log(matched);
-//    });
-//});
-
 
 module.exports = cryptoHelper;
 
