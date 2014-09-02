@@ -4,6 +4,7 @@ var dbConn = require('../dbConn');
 var jsonWebToken = require('jwt-simple');
 var moment = require('moment');
 var cryptoHelper = require('../cryptoHelper');
+var surveyValidation = require('../surveyValidation');
 
 //Opening database connection //TODO: clean or remove
 dbConn.db.open(function(err,db){
@@ -81,18 +82,37 @@ exports.findById = function(req, res){
 //Adds survey to DB (JSON must be provided in body)
 exports.addSurvey = function(req,res){
     var survey = req.body;
-    dbConn.db.collection('surveys', function(err, collection){
-        collection.insert(survey, {safe:true},
-        function(err, result){
-            if(err){
-                res.send({'error': 'An error has occurred'});
-            }
-            else
-            {
-                res.send(result[0]);
-            }
+
+    surveyValidation.isSurveyValid(survey, function(isValid, errors){
+    if(isValid)
+    {
+        if(!survey._id && survey.id && typeof survey.id == 'string')
+        {
+            survey._id = survey.id; //ensuring the right type of id field is used for mongoDB
+        }
+        dbConn.db.collection('surveys', function (err, collection) {
+            collection.insert(survey, {safe: true},
+                function (err, result) {
+                    if (err)
+                    {
+                        res.status(400).send({'error': 'An error has occurred'});
+                    }
+                    else {
+                        res.status(201).send("Created");
+                    }
+                })
         })
-    })
+    }
+    else
+    {
+        res.status(400);
+        for(var i in errors)
+        {
+            res.write(errors[i]);
+        }
+        res.end();
+    }
+    });
 };
 
 exports.updateSurvey = function(req,res)
