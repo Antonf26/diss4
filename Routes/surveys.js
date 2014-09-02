@@ -3,8 +3,8 @@ var config = require('../config');
 var dbConn = require('../dbConn');
 var jsonWebToken = require('jwt-simple');
 var moment = require('moment');
-var cryptoHelper = require('../cryptoHelper');
-var surveyValidation = require('../surveyValidation');
+var cryptoHelper = require('../Helpers/cryptoHelper');
+var surveyValidation = require('../Helpers/surveyValidation');
 
 //Opening database connection //TODO: clean or remove
 dbConn.db.open(function(err,db){
@@ -96,9 +96,11 @@ exports.addSurvey = function(req,res){
                     if (err)
                     {
                         res.status(400).send({'error': 'An error has occurred'});
+                        return;
                     }
                     else {
                         res.status(201).send("Created");
+                        return;
                     }
                 })
         })
@@ -108,7 +110,7 @@ exports.addSurvey = function(req,res){
         res.status(400);
         for(var i in errors)
         {
-            res.write(errors[i]);
+            res.write(errors[i] + "\n");
         }
         res.end();
     }
@@ -135,17 +137,30 @@ exports.updateSurvey = function(req,res)
                     }
                     else
                     {
-                        collection.update({'_id':id}, survey, function(err, result)
-                        {
-                            if(err)
-                            {
-                                res.status(400).send("Error updating survey");
+                        surveyValidation.isSurveyValid(survey, function(isValid, errors){
+                            if (isValid) {
+                                if (!survey._id && survey.id && typeof survey.id == 'string') {
+                                    survey._id = survey.id; //ensuring the right type of id field is used for mongoDB
+                                }
+                                collection.update({'_id': id}, survey, function (err, result) {
+                                    if (err) {
+                                        res.status(400).send("Error updating survey");
+                                    }
+                                    else {
+                                        res.status(200).send("Survey Updated");
+                                    }
+                                });
                             }
                             else
                             {
-                                res.status(200).send("Survey Updated");
+                                res.status(400);
+                                for(var i in errors)
+                                {
+                                    res.write(errors[i] + "\n");
+                                }
+                                res.end();
                             }
-                        });
+                        })
                     }
                 });
         });

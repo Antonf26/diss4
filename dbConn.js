@@ -1,6 +1,4 @@
-/**
- * Created by Anton on 07/08/2014.
- */
+// Handles connection to the database. Usess config file to know where to connect to.
 var mongo = require('mongodb');
 var Server = mongo.Server,
     Db = mongo.Db;

@@ -3,7 +3,7 @@
  */
     var dbConn = require('../dbConn');
     var config = require('../config');
-    var authenticationHelper = require('../authenticationHelper');
+    var authenticationHelper = require('../Helpers/authenticationHelper');
 
 
 exports.findAll = function(req,res){

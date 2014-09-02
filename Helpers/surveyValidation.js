@@ -1,3 +1,4 @@
+var helpers = require('./helpers');
 exports.isSurveyValid = function(survey, callback)
 {
     try
@@ -6,7 +7,7 @@ exports.isSurveyValid = function(survey, callback)
         var errors = [];
         for (var i in mandatoryAttributes)
         {
-            if(!survey[mandatoryAttributes[i]] || survey[mandatoryAttributes[i]].length == 0 || typeof mandatoryAttributes[i] != 'string')
+            if(!survey[mandatoryAttributes[i]] || survey[mandatoryAttributes[i]].length == 0 || typeof survey[mandatoryAttributes[i]] != 'string')
             {
                 errors[errors.length] = "Invalid or missing value for " + mandatoryAttributes[i];
             }
@@ -16,7 +17,11 @@ exports.isSurveyValid = function(survey, callback)
         var hasDefaultAnswers = false;
         if(survey.defaultAnswers && survey.defaultAnswers.length > 0)
         {
-            hasDefaultAnswers = true; //if default answers are defined, check that each has an ID and text //todo: check that ID's are unique
+            hasDefaultAnswers = true; //if default answers are defined, check that each has an ID and text
+            if(!helpers.attributeIsUnique(survey.defaultAnswers, 'id'))
+            {
+                errors.push("Duplicate Id's for default answers");
+            }
             for(var i in survey.defaultAnswers)
             {
                 var ans = survey.defaultAnswers[i];
@@ -26,10 +31,12 @@ exports.isSurveyValid = function(survey, callback)
                 }
             }
         }
-
-
         if(survey.questions || survey.questions.length > 0) //check if any questions have been defined
         {
+            if(!helpers.attributeIsUnique(survey.questions, 'id'))
+            {
+                errors.push("Duplicate Id's for questions");
+            }
             for(var i in survey.questions)
             {
                 var questionValidationResult = isValidQuestion(survey.questions[i], hasDefaultAnswers);
@@ -41,16 +48,45 @@ exports.isSurveyValid = function(survey, callback)
                     }
                 }
             }
-
         }
         else
         {
             errors.push("No questions found, at least one question must be defined.");
         }
+        if(survey.authenticationFields && survey.authenticationFields.length > 0)
+        {
+            var invalidFields = survey.authenticationFields.filter(isValidAuthenticationField);
+            if(invalidFields.length > 0)
+            {
+                invalidFields.forEach(function(element, index, array)
+                {
+                    errors.push("Invalid authentication field at position " + index);
+                });
+            }
+            var numberOfPasswordFields = survey.authenticationFields.filter(function(authField)
+            {return authField.fieldType.toLowerCase() == 'password';});
+
+            if(numberOfPasswordFields > 1)
+            {
+                errors.push("Only one authentication field with type 'Password' is allowed");
+            }
+        }
+        if(survey.acceptanceCriteria && survey.acceptanceCriteria.lencth >0)
+        {
+            survey.acceptanceCriteria.forEach(function(criterion, index, array)
+            {
+                if(!criterion.consentText || !criterion.consentText.length == 0 || typeof criterion.consentText != 'sting')
+                {
+                    errors.push("Please provide some text for acceptance criterion at position " + index);
+                }
+            })
+        }
+
         if(errors.length>0)
         {
             callback(false, errors);
         }
+        else
         {
             callback(true);
         }
@@ -111,10 +147,38 @@ var isValidQuestion = function(question, surveyHasDefaultAnswers)
                     questionValidationResult.errors.push("Invalid custom answer at position " + i);
                 }
             }
+            if(!helpers.attributeIsUnique(question.customAnswers, 'id'))
+            {
+                questionValidationResult.isValid = false;
+                questionValidationResult.errors.push("Duplicate answer id's")
+            }
+
         }
     }
     return questionValidationResult;
 };
+
+
+//functions checks the validity of survey authentication fields. True signifies invalid field
+var isInvalidAuthenticationField = function(authField) //filter array of authentication fields for any invalid ones
+{
+    var mandatoryAttributes = ['fieldName', 'fieldLabel', 'fieldType'];
+    for (var i in mandatoryAttributes)
+    {
+        if(!authField[mandatoryAttributes[i]] || authField[mandatoryAttributes[i]].length == 0 || typeof authField[mandatoryAttributes[i]] != 'string') //checking all mandatory attributes are present and strings
+        {
+            return true;
+        }
+        var validFieldTypes = ['password', 'text', 'number'];
+        if(validFieldTypes.indexOf(authField.fieldType.toLowerCase()) == -1) //if the field type declared is not one of the valid options
+        {
+            return true;
+        }
+    }
+};
+
+
+
 
 
 

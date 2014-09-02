@@ -1,11 +1,11 @@
 /**
  * Created by Anton on 01/09/2014.
  */
-var dbConn = require('./dbConn');
+var dbConn = require('./../dbConn');
 var cryptoHelper = require('./cryptoHelper');
 var moment = require('moment');
 var jsonWebToken = require('jwt-simple');
-var config = require('./config');
+var config = require('./../config');
 var ObjectID = require('mongodb').ObjectID;
 
 //Function attempts to authenticate user with username and password provided. Result is passed as parameter to callback function, with true for success and false for error.

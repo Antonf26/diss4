@@ -8,7 +8,7 @@ var results = require('./Routes/results');
 var adminUsers = require('./Routes/adminUsers');
 var bodyParser = require('body-parser');
 var config = require('./config');
-var authenticationHelper = require('./authenticationHelper');
+var authenticationHelper = require('./Helpers/authenticationHelper');
 
 var app= express();
 app.set('views', __dirname + '/Views');
@@ -45,7 +45,6 @@ if (config.web.developmentRoutes)
     app.get('/adminUsers', [authenticationHelper.tokenMiddleware, adminUsers.getAdminUsers])
 }
 
-//change portNumber to change port server listens on.
 var portNumber = config.web.port;
 app.listen(portNumber);
 console.log('Listening on port ' + portNumber);
