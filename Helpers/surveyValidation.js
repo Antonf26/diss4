@@ -55,7 +55,7 @@ exports.isSurveyValid = function(survey, callback)
         }
         if(survey.authenticationFields && survey.authenticationFields.length > 0)
         {
-            var invalidFields = survey.authenticationFields.filter(isValidAuthenticationField);
+            var invalidFields = survey.authenticationFields.filter(isInvalidAuthenticationField);
             if(invalidFields.length > 0)
             {
                 invalidFields.forEach(function(element, index, array)

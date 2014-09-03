@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 //routes for users
 app.get('/survey/:id', surveys.runSurvey); //used to run the survey front-end
 app.post('/results', results.addResult); //used to store survey results
-app.get('/surveys/:id', [authenticationHelper.tokenMiddleware, surveys.findById]); //used to retrieve survey data by the front-end
+app.get('/surveys/:id', surveys.findById); //used to retrieve survey data by the front-end
 app.post('/authenticate', surveys.authenticate); //used to authenticate and receive token for a particular survey
-app.post('/authenticateResults', results.authenticateUser);
+app.post('/authenticateAdmin', adminUsers.authenticateUser);
 app.get('/results', [authenticationHelper.tokenMiddleware, results.findAll]); //used to retrieve results
 app.get('/resultViewer', results.viewer);
 
@@ -32,13 +32,12 @@ app.get('/resultViewer', results.viewer);
 
 if (config.web.developmentRoutes)
 {
-    app.post('/surveys', surveys.addSurvey);
-    app.delete('/surveys', surveys.deleteAll);
-    app.delete('/surveys/:id', surveys.deleteById);
+    app.post('/surveys', [authenticationHelper.tokenMiddleware, surveys.addSurvey]);
+    app.delete('/surveys', [authenticationHelper.tokenMiddleware, surveys.deleteAll]);
+    app.delete('/surveys/:id', [authenticationHelper.tokenMiddleware,surveys.deleteById]);
     app.put('/surveys/:id', [authenticationHelper.tokenMiddleware, surveys.updateSurvey]);
     app.get('/surveys', [authenticationHelper.tokenMiddleware, surveys.findAll]); //used to re
     app.post('/surveyPasswords', [authenticationHelper.tokenMiddleware, surveys.addPassword]);
-    app.put('/surveyPasswords', [authenticationHelper.tokenMiddleware, surveys.addPassword]);
     app.delete('/surveyPasswords', [authenticationHelper.tokenMiddleware, surveys.deletePassword]);
     app.post('/adminUsers', [authenticationHelper.tokenMiddleware, adminUsers.addAdminUser]);
     app.delete('/adminUsers', [authenticationHelper.tokenMiddleware, adminUsers.deleteAdminUser]);

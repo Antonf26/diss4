@@ -3,6 +3,7 @@ var config = require('../config');
 var dbConn = require('../dbConn');
 var cryptoHelper = require('../Helpers/cryptoHelper');
 var userValidation = require('../Helpers/userValidation');
+var authenticationHelper = require('../Helpers/authenticationHelper');
 
 //Creates a new admin user from http request if the provided data is valid
 exports.addAdminUser = function(req, res)
@@ -203,6 +204,39 @@ var checkValidUserDetails = function(userName, password, callback)
                             }
                         });
                     });
+                }
+            });
+        }
+    });
+};
+
+exports.authenticateUser = function(req, res){
+
+    if(!req.body.userName || !req.body.password)
+    {
+        res.status(400).send("Please provide username and password");
+        return;
+    }
+    authenticationHelper.authenticateAdminUser(req.body.userName, req.body.password, function (success, data)
+    {
+        if(!success)
+        {
+            res.status(401).send(data);
+
+        }
+        else
+        {
+            authenticationHelper.createUserToken(data, 24, function(success, data)
+            {
+                if(success)
+                {
+                    tokendata = {userToken:data};
+
+                    res.status(200).send(tokendata);
+                }
+                else
+                {
+                    res.status(400).send("Authentication Error");
                 }
             });
         }

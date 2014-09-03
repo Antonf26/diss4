@@ -12,7 +12,7 @@ resultServices.factory('resultService', ['$http', function($http)
     {
         $http(
             {
-                url: '/authenticateResults',
+                url: '/authenticateAdmin',
                 method: 'POST',
                 data: JSON.stringify({userName: username, password: password}),
                 headers: {'Content-Type': 'application/json'}
