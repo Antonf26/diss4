@@ -31,7 +31,7 @@ exports.isSurveyValid = function(survey, callback)
                 }
             }
         }
-        if(survey.questions || survey.questions.length > 0) //check if any questions have been defined
+        if(survey.questions && survey.questions.length > 0) //check if any questions have been defined
         {
             if(!helpers.attributeIsUnique(survey.questions, 'id'))
             {

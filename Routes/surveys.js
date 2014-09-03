@@ -90,11 +90,18 @@ exports.addSurvey = function(req,res){
         {
             survey._id = survey.id; //ensuring the right type of id field is used for mongoDB
         }
+        survey._id = survey._id.toUpperCase(); //ensuring all ID's are uppercase;
+
         dbConn.db.collection('surveys', function (err, collection) {
             collection.insert(survey, {safe: true},
                 function (err, result) {
                     if (err)
                     {
+                        if(err.code = 11000)
+                        {
+                            res.status(400).send('Can\'t insert survey with duplicate id');
+                            return;
+                        }
                         res.status(400).send({'error': 'An error has occurred'});
                         return;
                     }
@@ -203,7 +210,7 @@ exports.deleteById = function (req,res)
                             }
                             else
                             {
-                                res.status(200).send("Survey Deleted");
+                                res.status(204).send("Survey Deleted");
                             }
                         });
                     }
