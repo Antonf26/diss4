@@ -24,7 +24,7 @@ exports.isPasswordValid = function(password, callback)
         passwordValidationResult.errors.push("Password contains illegal characters. Only letters, numbers and underscore are allowed.");
     }
     //Checking if the password contains at least one lowercase letter, one uppercase letter and one number
-    if(!helpers.containsCapitalLetter(password) || !helpers.containsSmallLetter(password) || !helpers.containsNumber(password))
+    if(!helpers.containsUppercaseLetter(password) || !helpers.containsLowercaseLetter(password) || !helpers.containsNumber(password))
     {
         passwordValidationResult.isValid = false;
         passwordValidationResult.errors.push("Password must contain at least one lowercase letter, one uppercase letter and one number");

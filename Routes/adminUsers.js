@@ -1,6 +1,6 @@
 //Handles API actions for managing administrative users.
 var config = require('../config');
-var dbConn = require('../dbConn');
+var dbConn = require('../Helpers/dbConn');
 var cryptoHelper = require('../Helpers/cryptoHelper');
 var userValidation = require('../Helpers/userValidation');
 var authenticationHelper = require('../Helpers/authenticationHelper');

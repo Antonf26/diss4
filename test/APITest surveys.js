@@ -397,3 +397,73 @@ describe("Authenticated survey functionality", function(){ //tests for survey-le
 
 });
 
+var sampleResult =
+{
+    authFields: {
+        respondentNumber: "54789" //password fields are not submitted to results from the client
+    },
+
+    surveyID: "TESTAUTHSURVEY",
+    time: "2014-09-03T23:48:35.355Z",
+    questions: [
+        {
+            questionText: "Huh?",
+            selectedAnswer: {
+                id: "0",
+                answerText: "Strongly Disagree"
+            },
+            questionId: "0"
+        },
+        {
+            questionText: "Yep",
+            selectedAnswer: {
+                id: "1",
+                answerText: "No"
+            },
+            questionId: "1"
+        }
+    ]
+};
+describe("Submission survey results", function(done){
+
+    it("Should allow submission of valid result", function(done)
+    {
+        api.post('/results')
+            .send(sampleResult)
+            .expect(201, done);
+    });
+
+    it("Shouldn't allow submission of result for non-existent survey", function(done)
+    {
+        sampleResult.surveyID = "Fake";
+        api.post('/results')
+            .send(sampleResult)
+            .expect(400, done);
+    });
+
+    it("Shouldn't allow submission of result with invalid time", function(done)
+    {
+        sampleResult.surveyID = "TESTAUTHSURVEY"; //restoring valid value to test time
+        sampleResult.time="invalid";
+        api.post('/results')
+            .send(sampleResult)
+            .expect(400, done);
+    });
+
+    it("Shouldnt' allow submission of result without a surveyID", function(done)
+    {
+        sampleResult.time = "2014-09-03T23:48:35.355Z"; //restoring valid value to test time
+        delete sampleResult.surveyID;
+        api.post('/results')
+            .send(sampleResult)
+            .expect(400, done);
+    });
+
+    it("Should alow retrieval of results by an authorised user", function(done)
+    {
+       api.get('/results')
+           .set('x-user-token', token)
+           .expect(200, done);
+    });
+});
+

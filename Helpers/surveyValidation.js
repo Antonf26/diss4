@@ -1,4 +1,6 @@
 var helpers = require('./helpers');
+
+//Performs validation on survey object passed in
 exports.isSurveyValid = function(survey, callback)
 {
     try

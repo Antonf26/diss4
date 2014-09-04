@@ -1,7 +1,7 @@
 /**
  * Created by Anton on 01/09/2014.
  */
-var dbConn = require('./../dbConn');
+var dbConn = require('./dbConn');
 var cryptoHelper = require('./cryptoHelper');
 var moment = require('moment');
 var jsonWebToken = require('jwt-simple');
@@ -42,6 +42,8 @@ exports.authenticateAdminUser = function(userName, password, callback)
     })
 };
 
+//Creates token with userId provided, expiring in amount of hours provided
+//Calls callback function passed in with boolean indicating success and string error if present
 exports.createUserToken = function(userId, ttlHours, callback)
 {
   if(!userId || userId.length < 1)
@@ -55,7 +57,7 @@ exports.createUserToken = function(userId, ttlHours, callback)
       var userToken = jsonWebToken.encode({
           iss: userId,
           exp: expiryDate}, config.web.tokenSecret);
-      callback(true, userToken);
+      callback(true, userToken); //Success, return the token
   }
   catch (exception)
   {
@@ -63,6 +65,9 @@ exports.createUserToken = function(userId, ttlHours, callback)
   }
 };
 
+
+//Verifies an administrative user token - token string is passed in as parameter
+//Calls callback function provided when done, with boolean indication success and string error if token wasn't verified or the user data object if it was
 exports.verifyUserToken = function(token, callback)
 {
     try
@@ -70,7 +75,7 @@ exports.verifyUserToken = function(token, callback)
         var decodedToken = jsonWebToken.decode(token, config.web.tokenSecret);
         var userId = decodedToken.iss;
         var expiry = decodedToken.exp;
-        if (moment() > expiry)
+        if (moment() > expiry) //Comparing expiration data to current
         {
             callback(false, "Token Expired");
             return;
@@ -78,7 +83,7 @@ exports.verifyUserToken = function(token, callback)
         dbConn.db.collection('adminUsers', function(err, collection)
         {
             if(!err){
-                collection.findOne({'_id': new ObjectID(userId)}, function(err, item)
+                collection.findOne({'_id': new ObjectID(userId)}, function(err, item) //Checking if there's a user with this id
                 {
                     if(err || !item)
                     {
@@ -99,24 +104,25 @@ exports.verifyUserToken = function(token, callback)
     }
 };
 
+//Middleware - used by express to check user has a valid token before providing access to secured routes
 exports.tokenMiddleware = function(req,res, next)
 {
-    var token = req.headers['x-user-token'];
+    var token = req.headers['x-user-token']; //getting token from the headers
     if(!token)
     {
-        res.status(401).send("Please authenticate");
+        res.status(401).send("Please authenticate"); //If there's no token, the request doesn't go any further
         return;
     }
     exports.verifyUserToken(token, function(success, data)
     {
         if(success)
         {
-            req.user = data;
+            req.user = data; //attaching the user data to the request, this can be queried in route function
             next();
         }
         else
         {
-            res.status(401).send(data);
+            res.status(401).send(data); //Respond with the error
         }
     })
 };
