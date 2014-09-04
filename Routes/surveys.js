@@ -5,6 +5,7 @@ var jsonWebToken = require('jwt-simple');
 var moment = require('moment');
 var cryptoHelper = require('../Helpers/cryptoHelper');
 var surveyValidation = require('../Helpers/surveyValidation');
+var userValidation = require('../Helpers/userValidation');
 
 //Opening database connection //TODO: clean or remove
 dbConn.db.open(function(err,db){
@@ -226,24 +227,56 @@ exports.deleteById = function (req,res)
 
 exports.addPassword = function (req,res){
     try {
-        var id = req.body.surveyID;
+        var id = req.body.surveyID
         var password = req.body.password;
         if (!id || !password)
         {
             res.status(400).send("Please provide surveyID and password");
         }
-        cryptoHelper.hashPassword(password, function (hash) {
-            dbConn.db.collection('surveypasswords', function (err, collection) {
-                collection.insert({'surveyID': id, 'password': hash}, function (err, item) {
-                    if (err) {
-                        console.log(err);
+        userValidation.isPasswordValid(password, function(passwordValidationResult) {
+            if (passwordValidationResult.isValid)
+            {
+                dbConn.db.collection('surveys', function(err, collection) {
+                    if(err)
+                    {
+                        res.status(400).send("Error reading database");
                     }
-                    else {
-                        console.log('added');
+                    else
+                    {
+                        collection.findOne({'_id': id.toUpperCase()}, function(err, item)
+                        {
+                            if(!item)
+                            {
+                                res.status(400).send("Invalid Survey ID");
+                            }
+                            else
+                            {
+                                cryptoHelper.hashPassword(password, function (hash) {
+                                    dbConn.db.collection('surveypasswords', function (err, collection) {
+                                        collection.insert({'surveyID': id.toUpperCase(), 'password': hash}, function (err, item) {
+                                            if (err) {
+                                                res.status(400).send("Error writing to database");
+                                            }
+                                            else {
+                                                res.status(201).send("Created");
+                                            }
+                                        });
+                                    })
+                                });
+                            }
+                        });
                     }
                 });
-            })
-        })
+        }
+            else //If the password validation failed
+            {
+                res.status(400);
+                passwordValidationResult.errors.forEach(function(error){
+                    res.write(error + '\n');
+                });
+                res.end();
+            }
+        });
     }
     catch (Exception){
         res.status(400).send("Error reading request");
@@ -260,9 +293,8 @@ exports.deletePassword = function (req,res)
         if (!id || !password) {
             res.status(400).send("Please provide surveyID and password");
         }
-        cryptoHelper.hashPassword(password, function (hash) {
             dbConn.db.collection('surveypasswords', function (err, collection) {
-                collection.findOne({'surveyID': id, 'password': hash}, function(err, item) //check if the password exists for this survey
+                collection.findOne({'surveyID': id}, function(err, item) //check if the password exists for this survey
                 {
                     if (err)
                     {
@@ -275,20 +307,24 @@ exports.deletePassword = function (req,res)
                     }
                     else
                     {
-                        collection.remove({'surveyID': id, 'password': hash}, function (err, result)
-                        {
-                            if (err)
-                            {
-                                res.status(400).send("Error reading request");
+                        cryptoHelper.checkPassword(password, item.password, function(success){
+                            if(success) {
+                                collection.remove({'surveyID': id}, function (err, result) {
+                                    if (err) {
+                                        res.status(400).send("Error reading request");
+                                    }
+                                    else {
+                                        res.status(204).send("Password removed")
+                                    }
+                                });
                             }
                             else
                             {
-                                res.status(200).send("Password removed")
+                                res.status(400).send("Password not found for deletion");
                             }
-                        });
+                        })
                     }
                 });
-            })
         })
     }
     catch(Exception)
@@ -302,7 +338,12 @@ exports.authenticate = function(req, res){
     try {
         var authFields = req.body.authFields;
         var surveyId = req.body.surveyID;
-        var password = authFields.filter(function(field) {return field.fieldType.toUpperCase() == "PASSWORD"})[0].valueEntered; //todo: check if there are no password fields, then just make a token?
+        var passwordFields = authFields.filter(function(field) {return field.fieldType.toUpperCase() == "PASSWORD"});
+        var password;
+        if(passwordFields)
+        {
+            password = passwordFields[0].valueEntered;
+        }
         dbConn.db.collection('surveypasswords', function (err, collection)
         {
             if(err)
@@ -322,7 +363,7 @@ exports.authenticate = function(req, res){
                     {
                         if(!matchedPasswords)
                         {
-                            res.send(401, "Incorrect password provided");
+                           res.send(401, "Incorrect password provided");
                         }
                         else
                         {

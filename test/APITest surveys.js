@@ -16,8 +16,6 @@ var token;
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
-var dbConn = require('../dbConn');
-var cryptoHelper = require('../Helpers/cryptoHelper');
 
 app.use(bodyParser.json());
 
@@ -74,9 +72,6 @@ var validSurvey = {
     surveyHead: "Head"
 };
 
-var token;
-
-
 describe("Managing authentication-free surveys", function () {
     before(function (done) //get a token for a valid user authentication
     {
@@ -94,7 +89,6 @@ describe("Managing authentication-free surveys", function () {
                 api.delete('/surveys/' + validSurvey.id) //deleting any survey still in the database with the same id
                     .set('x-user-token', token)
                     .end(function (err, res) {
-                        console.log(res.status);
                         done()
                     });
             });
@@ -212,7 +206,9 @@ describe("Managing authentication-free surveys", function () {
     });
 });
 
-validSurvey.authenticationFields = [
+var testAuthSurvey = JSON.parse(JSON.stringify(validSurvey)); //cloning survey to have a version for using in authentication testing
+
+testAuthSurvey.authenticationFields = [
         {
             fieldName: "respondentNumber",
             fieldLabel: "Respondent Number",
@@ -223,10 +219,181 @@ validSurvey.authenticationFields = [
         fieldName: "password",
         fieldLabel: "Password",
         isRequired: true,
-        fieldType: "text"
+        fieldType: "password"
     }];
 
+testAuthSurvey.id = "TESTAUTHSURVEY";
+testAuthSurvey._id="TESTAUTHSURVEY";
+testAuthSurvey.title= "Test Authentication";
+
 describe("Authenticated survey functionality", function(){ //tests for survey-level authentication
+
+    before(function(done){
+    api.delete('/surveys/' + testAuthSurvey.id) //deleting any survey still in the database with the same id
+        .set('x-user-token', token)
+        .end(function (err, res) {
+            done()
+        });
+    });
+
+    it("Should allow addition of valid surveys with authentication fields", function (done) {
+        api.post('/surveys')
+            .set('x-user-token', token)
+            .send(testAuthSurvey)
+            .expect(201, done);
+    });
+
+    it("Should allow creation of survey-specific passwords", function(done){
+        var surveyPasswordObject = {
+            surveyID : testAuthSurvey.id,
+            password: "Banana12"
+        };
+
+        api.post('/surveyPasswords')
+            .set('x-user-token', token)
+            .send(surveyPasswordObject)
+            .expect(201, done);
+    });
+
+    it("Shouldn't allow creation of invalid passwords", function(done)
+    {
+        var brokenPasswordObject = {
+            surveyID : testAuthSurvey.id,
+            password: "short"
+        };
+
+        api.post('/surveyPasswords')
+            .set('x-user-token', token)
+            .send(brokenPasswordObject)
+            .expect(400, done);
+    });
+
+    it("Shouldn't allow creation of password for non-existent survey", function(done)
+    {
+        var fakeSurveyObject = {
+            surveyID: "Fictional",
+            password: "Valid123"
+        };
+
+        api.post('/surveyPasswords')
+            .set('x-user-token', token)
+            .send(fakeSurveyObject)
+            .expect(400, done);
+    });
+
+    it("Should retrieve authorisation-only version of surveys with authentication fields when no valid token is present", function(done)
+    {
+        var authOnlySurvey = {};
+        authOnlySurvey.authenticationFields = testAuthSurvey.authenticationFields;
+        authOnlySurvey.introText = testAuthSurvey.introText;
+        authOnlySurvey.title = testAuthSurvey.title;
+        authOnlySurvey._id = testAuthSurvey._id.toUpperCase();
+        authOnlySurvey.introFooter = testAuthSurvey.introFooter;
+        authOnlySurvey.requiresAuthentication = true;
+        //These should be the only fields returned for a survey with authentication fields present when there's no token present for this survey
+        api.get('/surveys/' + testAuthSurvey.id)
+            .expect(200)
+            .end(function(err, res)
+            {
+                if(err)
+                {
+                    done(err);
+                }
+                assert.deepEqual(res.body, authOnlySurvey);
+                done();
+
+            });
+    });
+    var surveyToken;
+    it("Should allow authentication for survey with valid details", function(done)
+    {
+        var surveyAuthenticationObject = {};
+
+        surveyAuthenticationObject.surveyID = testAuthSurvey._id.toUpperCase();
+        surveyAuthenticationObject.authFields = [
+            {
+                fieldName: "respondentNumber",
+                fieldLabel: "Respondent Number",
+                isRequired: true,
+                fieldType: "text",
+                valueEntered: 12345
+            },
+            {
+                fieldName: "password",
+                fieldLabel: "Password",
+                isRequired: true,
+                fieldType: "password",
+                valueEntered: "Banana12"
+            }];
+
+        api.post('/authenticate')
+            .send(surveyAuthenticationObject)
+            .expect(200)
+            .end(function(err,res) {
+                if (err) {
+                    return done(err)
+                }
+
+                surveyToken = res.body.token; //storing token for use in later tests
+                var decodedToken = jsonWebToken.decode(surveyToken, config.web.tokenSecret); //If this token is invalid, the test would fail as this would throw exception.
+                assert(decodedToken.sub = testAuthSurvey._id.toUpperCase());
+                done();
+            });
+    });
+
+    it("Shouldn't allow authentication for survey with valid details", function(done)
+    {
+        var surveyAuthenticationObject = {};
+
+        surveyAuthenticationObject.surveyID = testAuthSurvey._id.toUpperCase();
+        surveyAuthenticationObject.authFields = [
+            {
+                fieldName: "respondentNumber",
+                fieldLabel: "Respondent Number",
+                isRequired: true,
+                fieldType: "text",
+                valueEntered: 12345
+            },
+            {
+                fieldName: "password",
+                fieldLabel: "Password",
+                isRequired: true,
+                fieldType: "password",
+                valueEntered: "Wrong"
+            }];
+
+        api.post('/authenticate')
+            .send(surveyAuthenticationObject)
+            .expect(401, done);
+    });
+
+    it("Should return full survey for authentication-protected surveys when valid token is present", function(done)
+    {
+        api.get('/surveys/' + testAuthSurvey.id)
+            .set('x-access-token', surveyToken)
+            .expect(200)
+            .end(function(err, res)
+            {
+                if(err)
+                {
+                    done(err);
+                }
+                assert.deepEqual(res.body, testAuthSurvey); //Deep equals compares all fields of object - making sure full survey is returned
+                done();
+            });
+    });
+
+    it("Should allow deletion of survey passwords", function(done)
+    {
+        var surveyPasswordObject = {
+            surveyID : testAuthSurvey.id,
+            password: "Banana12"
+        };
+        api.delete('/surveyPasswords')
+            .set('x-user-token', token)
+            .send(surveyPasswordObject)
+            .expect(204, done);
+    });
 
 });
 

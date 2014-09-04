@@ -13,8 +13,6 @@ var token;
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
-var dbConn = require('../dbConn');
-var cryptoHelper = require('../Helpers/cryptoHelper');
 
 app.use(bodyParser.json());
 
@@ -130,6 +128,7 @@ var fakeUser = { //new user to be used in tests
     password: "Password123"
 };
 
+
 describe('Test management of administrative users', function()
 {
 
@@ -150,7 +149,19 @@ describe('Test management of administrative users', function()
         api.post('/adminUsers')
             .set('x-user-token', token) //Using token from earlier test
             .send(fakeUser)
-            .expect(201, done)
+            .expect(201, done);
+    });
+
+    it("Shouldn't allow creation of administrative users with invalid password", function(done)
+    {
+        var badPassUser = {
+            userName : "Tester",
+            password: "short"
+        };
+        api.post('/adminUsers')
+            .set('x-user-token', token) //Using token from earlier test
+            .send(badPassUser)
+            .expect(400, done);
     });
 
     it('should allow newly created user to authenticate', function(done)
@@ -179,7 +190,7 @@ describe('Test management of administrative users', function()
         )
     });
 
-    it('should allow authorised users deletion of newly created user. Deleted user shouldn\'t be able to authenticate', function(done)
+    it('should allow authorised users deletion Administrative user. Deleted user shouldn\'t be able to authenticate', function(done)
     {
         api.delete('/adminUsers')
             .set('x-user-token', token) //Using token from earlier test
