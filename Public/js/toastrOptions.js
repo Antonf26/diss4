@@ -1,6 +1,4 @@
-/**
- * Created by Anton on 07/07/2014.
- */
+//Defines the setting for the toatr plugin that's used to display warnings/errors
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -14,4 +12,4 @@ toastr.options = {
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
-}
+};

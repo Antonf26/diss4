@@ -7,15 +7,18 @@ function($http) {
     survey.surveyData = null;
     survey.UserToken = null;
 
+
+    //retrieving survey data from server or local variable
+    //when done, function passes survey object to callback function
     survey.getSurveyData = function(surveyID, callback)
     {
-		if(survey.surveyData && survey.surveyData._id == surveyID && !survey.surveyData.requiresAuthentication)  //if we already have the data and we've authenticated
+        if(survey.surveyData && survey.surveyData._id == surveyID && !survey.surveyData.requiresAuthentication)  //if we already have the data and we've authenticated (or don't need to)
         {
             callback(survey.surveyData);
         }
         else
         {
-            survey.retrieve(surveyID).success(function(data)
+            survey.retrieve(surveyID).success(function(data) //if not, retrieve it from the server
                 {
                     survey.surveyData = data;
                     callback(data);
@@ -27,12 +30,11 @@ function($http) {
     //Performs retrieval of survey from server
     survey.retrieve = function(surveyID)
     {
-        console.log(surveyID);
-        token = survey.getUserToken(surveyID);
-
-        return $http.get('/surveys/' + surveyID, {headers: {'x-access-token' : token}});
+        token = survey.getUserToken(surveyID); //grabbing the token if we have one
+        return $http.get('/surveys/' + surveyID, {headers: {'x-access-token' : token}}); //getting survey from the server API
     };
 
+    //Performs survey specifc authentication
     survey.authenticate = function(surveyID, authFields, callback)
     {
         $http(
@@ -41,34 +43,36 @@ function($http) {
                 method: 'POST',
                 data: JSON.stringify({surveyID: surveyID, authFields: authFields}),
                 headers: {'Content-Type': 'application/json'}
-            }).success(function (data){
-                survey.setUserToken(surveyID, data.token);
-                callback(true, data.authFields);
+            }).success(function (data){ //If there's a successful response from the server
+                survey.setUserToken(surveyID, data.token); //store the token
+                callback(true, data.authFields); //notify callback and pass cleaned-up authFields
             }).error(function(data)
             {
                 callback(false);
             })
     };
 
-    survey.setUserToken = function(surveyID, token)
+    survey.setUserToken = function(surveyID, token) //Storing token in local variable and session storage (session storage will persist until browser tab is closed)
     {
         survey.UserToken = {surveyID: token};
         amplify.store.sessionStorage("token" + surveyID, token);
     };
 
+    //Retrieving token
     survey.getUserToken = function(surveyID)
     {
-      if(survey.UserToken && survey.UserToken.surveyID)
+      if(survey.UserToken && survey.UserToken.surveyID) //If we have it in a variable
       {
           return survey.UserToken.surveyID;
       }
-      else if (amplify.store.sessionStorage("token" + surveyID))
+      else if (amplify.store.sessionStorage("token" + surveyID)) //if not, check if we have it in session storage
       {
           return amplify.store.sessionStorage("token" + surveyID);
       }
       return null;        //if we don't have a token cached or stored
     };
 
+    //Deleting any stored token for the surveyID - i.e. when logging out
     survey.clearUserToken = function(surveyID)
     {
         survey.UserToken = null;
@@ -76,11 +80,12 @@ function($http) {
         survey.clearSurveyData();
     };
 
+
+    //Deleting any data on the survey we're holding
     survey.clearSurveyData = function()
     {
         survey.surveyData = null;
     };
-
 
     return survey;
 }]);
@@ -135,23 +140,19 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
 		
 		// result is the object returned by the service - handles storing, formatting and posting survey results 
 		result = {};
-		//required fields 
-        result.consented = false;
+		//required fields
         result.authFields = null;
-        result.respondentNumber = 0;
         result.surveyID = '';
         result.questions = [];
-        result.authenticated = false; 
 		
 		//called from controllers to set completed values of the auth fields
         result.setAuthFields = function (authData)
         {
             result.authFields = authData;
             amplify.store(result.getSurveyId(), authData);
-            result.authenticated = true; //add some validation here or on controller
             console.log(authData);
         };
-
+        //retrieve stored authentication field data
         result.getAuthFields = function(surveyId)
         {
             if(result.authFields)
@@ -189,16 +190,7 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
         });
         };
 
-
-
-        result.setRespondentNumber = function (Number) {
-            result.respondentNumber = Number;
-        };
-        
-		result.getRespondentNumber = function(){
-            return result.respondentNumber;
-        };
-        
+        //getters and setters for portions of the result
 		result.setQuestions = function (Questions) {
             result.questions = Questions;
         };
@@ -213,7 +205,8 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
         {
             return result.surveyID || amplify.store('surveyID');
         };
-        
+
+        //cleaning up the results and posting them to the serverAPI. Return promise object for the http post request
 		result.save = function (surveyId){
             var saving = new resultSaver(surveyId,
             new Date(), questionCleaner(this.questions), authFieldCleaner(this.getAuthFields(surveyId)));
