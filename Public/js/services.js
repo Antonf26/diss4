@@ -1,6 +1,6 @@
-var surveyAppServices = angular.module('surveyAppServices', ['ngResource']);
+var surveyApp = angular.module('surveyApp');
 
-surveyAppServices.factory('surveyService', ['$http',
+surveyApp.factory('surveyService', ['$http',
 //Service deals with storing and retrieving the survey object
 function($http) {
     var survey = {};
@@ -92,10 +92,9 @@ function($http) {
 
 
 
-var services2 = angular.module('services2', ['ngResource']);
 
 //Service handles formatting and submission of completed survey
-services2.factory('SurveyResult', ['$http', 'surveyService',
+surveyApp.factory('SurveyResult', ['$http', 'surveyService',
     function($http, surveyService)
 	{
         //object that's posted (as JSON) to the back-end holding the survey's results
@@ -150,7 +149,6 @@ services2.factory('SurveyResult', ['$http', 'surveyService',
         {
             result.authFields = authData;
             amplify.store(result.getSurveyId(), authData);
-            console.log(authData);
         };
         //retrieve stored authentication field data
         result.getAuthFields = function(surveyId)

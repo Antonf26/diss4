@@ -1,5 +1,5 @@
 //This directive handles the display of survey questions
-var surveyDirectives = angular.module('surveyDirectives', []);
+var surveyDirectives = angular.module('surveyApp');
 
 surveyDirectives.directive('ngQuestion', function () {
     return {

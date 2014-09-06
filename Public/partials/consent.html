@@ -1,6 +1,6 @@
 
 <form ng-submit="goToSurvey()" class="consentForm">
-    <div class="logoutDiv"><button class="logoutLink btn btn-primary btn-xs" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</button></div>
+    <div class="logoutDiv"><button type="button" class="logoutLink btn btn-primary btn-xs" ng-click="logout()" ng-if="survey.authenticationFields">Log Out</button></div>
     <div class="consentHeader"><h2>Consent Form</h2><h3  ng-bind="survey.acceptanceText"></h3></div>
     <div ng-repeat="consentItem in survey.acceptanceCriteria" class="consentItems">
         <div class="row consentRow" ng-class="{highlightError : consentItem['error'] && !consentItem.agreed}">

@@ -1,6 +1,6 @@
 
 
-var surveyApp = angular.module('surveyApp', ['ngRoute', 'surveyControllers', 'surveyAppServices', 'services2', 'ngTouch', 'ngAnimate', 'surveyDirectives', 'ngSanitize', 'checklist-model', 'ui.bootstrap']);
+var surveyApp = angular.module('surveyApp', ['ngRoute', 'surveyApp', 'ngTouch', 'ngAnimate', 'ngSanitize', 'checklist-model', 'ui.bootstrap']);
 
 surveyApp.config(['$routeProvider',
     function($routeProvider) {

@@ -1,10 +1,6 @@
-/**
- * Created by Anton on 24/06/2014.
- */
+var surveyApp = angular.module('surveyApp');
 
-var surveyControllers = angular.module('surveyControllers', []);
-
-surveyControllers.controller('redirectController', [
+surveyApp.controller('redirectController', [
     '$scope', '$location', 'SurveyResult', 'surveyService',
     function ($scope, $location, SurveyResult, surveyService) {
         //handles redirection at entry point to the survey
@@ -28,13 +24,12 @@ surveyControllers.controller('redirectController', [
     }
 ]);
 
-surveyControllers.controller('loginController', [
+surveyApp.controller('loginController', [
     '$scope', '$location', 'SurveyResult', 'surveyService',
     function ($scope, $location, SurveyResult, surveyService) {
         //handles login attempts
         $scope.handleLogin = function () {
-
-            toastr.clear();
+            //toastr.clear();
             //checking required fields for completion
             var hasIncomplete = false;
             for (var i in $scope.survey.authenticationFields) {
@@ -47,20 +42,18 @@ surveyControllers.controller('loginController', [
                 }
             }
             if (hasIncomplete) {
-                toastr.error("Please complete all required fields"); //if there are incomplete required fields, notify the user and don't bother trying to authenticate
+              //  toastr.error("Please complete all required fields"); //if there are incomplete required fields, notify the user and don't bother trying to authenticate
                 return;
             }
-
-
             SurveyResult.setSurveyId($scope.survey._id); //storing the surveyID for the service to use //TODO: check if this is needed
-            $scope.showError = false; //hide invalid password error
+            $scope.showPasswordError = false; //hide invalid password error
             surveyService.authenticate($scope.surveyID, $scope.survey.authenticationFields, function (successful, authFields) { //async call to authentication service
                 if (successful) {
                     SurveyResult.setAuthFields(authFields); //if authentication was successful, store the non-password fields
                     $location.url('/consent');   //and move forward
                 }
                 else {
-                    $scope.showError = true; //inform user of failed authentication
+                    $scope.showPasswordError = true; //inform user of failed authentication
                 }
             });
         };
@@ -74,7 +67,7 @@ surveyControllers.controller('loginController', [
         });
     }]);
 
-surveyControllers.controller('consentController',
+surveyApp.controller('consentController',
     ['$scope', 'SurveyResult', '$location', 'surveyService',
         function ($scope, SurveyResult, $location, surveyService) {
             $scope.goToLogin = function () //function to redirect to login
@@ -121,7 +114,7 @@ surveyControllers.controller('consentController',
         }]);
 
 
-surveyControllers.controller('questionController',
+surveyApp.controller('questionController',
     ['$scope', 'SurveyResult', '$location', 'surveyService', '$timeout',
         function ($scope, SurveyResult, $location, surveyService, $timeout) {
 
@@ -194,7 +187,7 @@ surveyControllers.controller('questionController',
             };
         }]);
 
-surveyControllers.controller('confirmationController', ['$scope', 'surveyService', '$location',
+surveyApp.controller('confirmationController', ['$scope', 'surveyService', '$location',
     function ($scope, surveyService, $location)
         //controller displays confirmation message from survey
     {
